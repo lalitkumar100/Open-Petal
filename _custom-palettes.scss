@@ -1,0 +1,39 @@
+// src/_custom-palettes.scss
+@use '@angular/material' as mat;
+
+// 1. Define the Primary Palette (derived from your logo's dark teal)
+$open-petal-primary: mat.define-palette((
+  50:  e0f7fa,
+  100: b2ebf2,
+  200: 80deea,
+  300: 4dd0e1,
+  400: 26c6da,
+  500: 2b7a91, // <-- Primary Base Color (Logo Dark Teal)
+  600: 039be5,
+  700: 0288d1,
+  800: 0277bd,
+  900: 01579b,
+  A100: 80d8ff,
+  A200: 40c4ff,
+  A400: 00b0ff,
+  A700: 0091ea,
+  contrast: (
+    50:  mat.get-color-from-palette(mat.$dark-palette, text),
+    100: mat.get-color-from-palette(mat.$dark-palette, text),
+    200: mat.get-color-from-palette(mat.$dark-palette, text),
+    300: mat.get-color-from-palette(mat.$dark-palette, text),
+    400: mat.get-color-from-palette(mat.$dark-palette, text),
+    500: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    600: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    700: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    800: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    900: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    A100: mat.get-color-from-palette(mat.$dark-palette, text),
+    A200: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    A400: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+    A700: mat.get-color-from-palette(mat.$dark-palette, default-contrast),
+  )
+));
+
+// 2. Define the Warn Palette (standard Material design red)
+$open-petal-warn: mat.define-palette(mat.$red-palette);

@@ -1,0 +1,6 @@
+.glow-active {
+    box-shadow: 0 0 8px 2px rgba(34, 193, 214, 0.2);
+}
+.glow-hover:hover {
+    box-shadow: 0 0 8px 2px rgba(34, 193, 214, 0.2);
+}

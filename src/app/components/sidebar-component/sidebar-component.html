@@ -1,0 +1,49 @@
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[280px] bg-on-secondary-fixed dark:bg-on-tertiary-fixed flex flex-col z-40 transition-all duration-300 ease-in-out">
+  <!-- Brand Header -->
+  <div class="px-6 py-8 flex flex-col gap-1 border-b border-on-secondary-fixed-variant/30">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1 font-headline-lg text-headline-lg text-primary-fixed dark:text-tertiary-fixed">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9gc5PudzVmOntFjvxwq6kFLIul1deYFVMswO_NE2bqk2n22MAO-smPUqIY0j8isGeRpyKNiga_C40m6A--GvRjw648IQJ4kJwkT1V_HAfTbcI9162DoVzDZy5et4VGtz4JOQ_UChuSczEls6abv-mghxnBCgz3U4oPj5uQ7PdaDo6ZvGvRM5_GogOOZfCDVmEvhIDabC4_8xekxx-5AyU8_4tWmc0M-HLv1EH0V_sJzjAaVuudTsR9mGjSOyozVEImw" alt="O" class="w-8 h-8 object-contain rotate-slow">
+        <span class="">pen Petal</span>
+      </div>
+    </div>
+    <span class="font-label-sm text-label-sm text-secondary-fixed-dim pl-11">Admin Console</span>
+  </div>
+  
+  <!-- Navigation Links -->
+  <div class="flex-1 overflow-y-auto py-6 flex flex-col gap-2">
+    <!-- Active Tab: Dashboard -->
+    <a class="flex items-center gap-3 text-primary-fixed-dim font-headline-md text-headline-md font-bold border-l-4 border-tertiary-fixed-dim bg-on-secondary-fixed-variant/20 px-4 py-3" href="#">
+      <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">dashboard</span>
+      <span class="font-label-md text-label-md">Dashboard</span>
+    </a>
+    <!-- Inactive Tab: Skills Management -->
+    <a class="flex items-center gap-3 text-secondary-fixed-dim hover:bg-on-secondary-fixed-variant/10 hover:text-white px-4 py-3 transition-colors" href="#">
+      <span class="material-symbols-outlined">psychology</span>
+      <span class="font-label-md text-label-md">Skills Management</span>
+    </a>
+    <!-- Inactive Tab: Queries Management -->
+    <a class="flex items-center gap-3 text-secondary-fixed-dim hover:bg-on-secondary-fixed-variant/10 hover:text-white px-4 py-3 transition-colors" href="#">
+      <span class="material-symbols-outlined">database</span>
+      <span class="font-label-md text-label-md">Queries Management</span>
+    </a>
+  </div>
+  
+  <!-- Footer Actions -->
+  <div class="p-4 border-t border-on-secondary-fixed-variant/30 flex flex-col gap-2">
+    <!-- User Profile Snippet -->
+    <div class="mt-4 flex items-center justify-between px-4 py-2 bg-on-secondary-fixed-variant/10 rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-primary-fixed-dim flex items-center justify-center text-on-primary-fixed font-bold">JD</div>
+        <div class="flex flex-col">
+          <span class="font-label-sm text-label-sm text-white">Jane Doe</span>
+          <span class="font-label-sm text-label-sm text-secondary-fixed-dim text-[10px]">Admin</span>
+        </div>
+      </div>
+      <button class="text-secondary-fixed-dim hover:text-error transition-colors">
+        <span class="material-symbols-outlined text-sm">logout</span>
+      </button>
+    </div>
+  </div>
+</nav>
