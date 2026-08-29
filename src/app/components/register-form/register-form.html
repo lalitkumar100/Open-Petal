@@ -1,0 +1,76 @@
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none"></div>
+<div class="w-full max-w-md relative z-10 bg-on-secondary-fixed-variant/40 p-6 rounded-xl border border-outline-variant/20 backdrop-blur-md shadow-2xl mx-auto max-h-[95vh] overflow-y-auto overflow-x-hidden custom-scrollbar">
+  <div class="flex flex-col items-center mb-6 mt-2">
+    <img alt="Open Petal Logo" class="w-16 h-auto mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD49ejpibKJ29mHsqSBPwvsvUtrTZfoTE-BGXL9vrm2YQv6aBlQ0W8vLRriT1lTVgtCQTsM4rVy61tY1hpEQ3MCcLIlYtssxUfox4zlAgs34IvumyZXGiipbf5JvNVYUo2M_yQDKusUuTUA4JoEIu42Q_JBLSsX4QZvGJE-kRbGELhdyde_iGcNpm52NPZKg22MAZQblsVlbuGzXDG5l-w4T2XZL6nD4upfoxNP4kWQFqzV2ug6WTeUGjFG3DGnGOU4vw"/>
+    <h1 class="font-display-lg text-[32px] leading-tight text-tertiary-fixed font-bold tracking-tight text-center">Create Account</h1>
+    <p class="font-body-md text-body-md text-secondary-fixed-dim mt-2 text-center">Join Open Petal today.</p>
+  </div>
+  <form class="flex flex-col w-full space-y-1 mt-2">
+    <!-- Name Row -->
+    <div class="flex gap-4">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>First Name</mat-label>
+        <mat-icon matPrefix class="mr-2 opacity-70">person</mat-icon>
+        <input matInput type="text" placeholder="John" id="firstName" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Last Name</mat-label>
+        <input matInput type="text" placeholder="Doe" id="lastName" />
+      </mat-form-field>
+    </div>
+    
+    <!-- Email Input -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Email Address</mat-label>
+      <mat-icon matPrefix class="mr-2 opacity-70">mail</mat-icon>
+      <input matInput type="email" placeholder="name@company.com" id="email" />
+    </mat-form-field>
+    
+    <!-- DOB Input -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Date of Birth</mat-label>
+      <mat-icon matPrefix class="mr-2 opacity-70">calendar_today</mat-icon>
+      <input matInput type="date" id="dob" style="color-scheme: dark;" />
+    </mat-form-field>
+    
+    <!-- Password Input -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Password</mat-label>
+      <mat-icon matPrefix class="mr-2 opacity-70">lock</mat-icon>
+      <input matInput type="password" placeholder="••••••••" id="password" />
+      <button mat-icon-button matSuffix type="button">
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </mat-form-field>
+    
+    <!-- Confirm Password Input -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Confirm Password</mat-label>
+      <mat-icon matPrefix class="mr-2 opacity-70">lock</mat-icon>
+      <input matInput type="password" placeholder="••••••••" id="confirmPassword" />
+      <button mat-icon-button matSuffix type="button">
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </mat-form-field>
+    
+    <!-- Terms and Conditions -->
+    <div class="pt-1 pb-4">
+      <mat-checkbox color="primary" class="text-secondary-fixed-dim whitespace-normal leading-tight">
+        I agree to the <a href="#" class="text-tertiary-fixed hover:underline" (click)="$event.stopPropagation()">Terms & Conditions</a> and <a href="#" class="text-tertiary-fixed hover:underline" (click)="$event.stopPropagation()">Privacy Policy</a>
+      </mat-checkbox>
+    </div>
+    
+    <!-- Actions -->
+    <div class="pt-2">
+      <button mat-flat-button color="primary" class="w-full !py-6 !rounded-lg !text-[16px] glow-effect" type="submit">
+        Register
+      </button>
+    </div>
+  </form>
+  <div class="mt-6 text-center">
+    <p class="font-body-md text-body-md text-secondary-fixed-dim">
+      Already have an account? 
+      <a class="text-tertiary-fixed hover:text-tertiary-fixed-dim font-medium transition-colors ml-1" routerLink="/login">Sign In</a>
+    </p>
+  </div>
+</div>

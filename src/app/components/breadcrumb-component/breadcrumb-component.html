@@ -1,20 +1,21 @@
 <!-- TopAppBar -->
 <header class="flex justify-between items-center h-16 px-6 w-full border-b border-outline-variant bg-surface shrink-0">
-  <!-- Breadcrumbs / Left -->
-  <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
-    <span class="text-primary font-bold">Dashboard</span>
-  </div>
-  
-  <!-- Trailing Actions / Right -->
-  <div class="flex items-center gap-6">
-    <!-- Status Badge -->
-    <div class="flex items-center gap-4 text-primary">
-      <button class="hover:text-tertiary-container transition-colors relative">
-        <span class="material-symbols-outlined">notifications</span>
-        <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
-      </button>
-      <button class="hover:text-tertiary-container transition-colors">
-      </button>
+    <!-- Breadcrumbs / Left -->
+    <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+        <!-- Hamburger Menu (Mobile Only) -->
+        <button mat-icon-button
+            class="lg:hidden -ml-2 mr-2 text-on-surface transition-colors cursor-pointer"
+            (click)="menuClick.emit()">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <span class="text-primary font-bold">Dashboard</span>
     </div>
-  </div>
+
+    <!-- Trailing Actions / Right -->
+    <div class="flex items-center gap-4 text-primary">
+        <!-- Status Badge -->
+        <button mat-icon-button class="hover:text-tertiary-container transition-colors">
+            <mat-icon matBadge="!" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+        </button>
+    </div>
 </header>

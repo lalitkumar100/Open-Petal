@@ -1,8 +1,11 @@
-<div class="bg-background font-body-md text-on-surface h-screen flex overflow-hidden">
-  <app-sidebar-component></app-sidebar-component>
+<div class="bg-background font-body-md text-on-surface h-screen flex overflow-hidden relative">
+  <!-- Mobile Overlay -->
+  <div *ngIf="isSidebarOpen" (click)="isSidebarOpen = false" class="fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity"></div>
   
-  <div class="ml-[280px] flex-1 flex flex-col h-full w-[calc(100%-280px)] bg-surface">
-    <app-breadcrumb-component></app-breadcrumb-component>
+  <app-sidebar-component [isOpen]="isSidebarOpen" (closeSidebar)="isSidebarOpen = false"></app-sidebar-component>
+  
+  <div class="flex-1 flex flex-col h-full w-full lg:ml-[280px] lg:w-[calc(100%-280px)] bg-surface transition-all duration-300">
+    <app-breadcrumb-component (menuClick)="toggleSidebar()"></app-breadcrumb-component>
     <app-main-area-component></app-main-area-component>
   </div>
 </div>

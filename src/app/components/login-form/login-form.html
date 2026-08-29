@@ -1,0 +1,49 @@
+<!-- Subtle background overlay for glassmorphism feel -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none"></div>
+<div class="w-full max-w-md relative z-10 bg-on-secondary-fixed-variant/40 p-6 rounded-xl border border-outline-variant/20 backdrop-blur-md shadow-2xl mx-auto">
+  <div class="flex flex-col items-center mb-6">
+    <img alt="Open Petal Logo" class="w-24 h-auto mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD49ejpibKJ29mHsqSBPwvsvUtrTZfoTE-BGXL9vrm2YQv6aBlQ0W8vLRriT1lTVgtCQTsM4rVy61tY1hpEQ3MCcLIlYtssxUfox4zlAgs34IvumyZXGiipbf5JvNVYUo2M_yQDKusUuTUA4JoEIu42Q_JBLSsX4QZvGJE-kRbGELhdyde_iGcNpm52NPZKg22MAZQblsVlbuGzXDG5l-w4T2XZL6nD4upfoxNP4kWQFqzV2ug6WTeUGjFG3DGnGOU4vw"/>
+    <h1 class="font-display-lg text-display-lg text-tertiary-fixed font-bold tracking-tight text-center">Welcome Back</h1>
+    <p class="font-body-md text-body-md text-secondary-fixed-dim mt-2 text-center">Sign in to continue to Open Petal.</p>
+  </div>
+  <form class="flex flex-col w-full space-y-1 mt-2">
+    <!-- Email Input -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Email Address</mat-label>
+      <mat-icon matPrefix class="mr-2 opacity-70">mail</mat-icon>
+      <input matInput type="email" placeholder="name@company.com" id="email" />
+    </mat-form-field>
+
+    <!-- Password Input -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Password</mat-label>
+      <mat-icon matPrefix class="mr-2 opacity-70">lock</mat-icon>
+      <input matInput type="password" placeholder="••••••••" id="password" />
+      <button mat-icon-button matSuffix type="button">
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Remember Me / Forgot Password -->
+    <div class="flex items-center justify-between pb-4 mt-[-10px]">
+      <mat-checkbox color="primary" class="text-secondary-fixed-dim">Remember me</mat-checkbox>
+      <a class="font-label-sm text-label-sm text-tertiary-fixed hover:text-tertiary-fixed-dim transition-colors" routerLink="/forgot-password">Forgot Password?</a>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col gap-4">
+      <button mat-flat-button color="primary" class="w-full !py-6 !rounded-lg !text-[16px] glow-effect" type="submit">
+        Login
+      </button>
+      <button mat-stroked-button class="w-full !py-6 !rounded-lg !text-[16px] text-on-primary" type="button">
+        Sign up with Google
+      </button>
+    </div>
+  </form>
+  <div class="mt-8 text-center">
+    <p class="font-body-md text-body-md text-secondary-fixed-dim">
+      Don't have an account? 
+      <a class="text-tertiary-fixed hover:text-tertiary-fixed-dim font-medium transition-colors ml-1" routerLink="/register">Sign Up</a>
+    </p>
+  </div>
+</div>

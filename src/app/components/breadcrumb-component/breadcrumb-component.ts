@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-breadcrumb-component',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './breadcrumb-component.html',
   styleUrl: './breadcrumb-component.css',
 })
-export class BreadcrumbComponent {}
+export class BreadcrumbComponent {
+  @Output() menuClick = new EventEmitter<void>();
+}

@@ -1,4 +1,23 @@
 <!-- Scrollable Dashboard Content -->
-<main class="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
+<main class="flex-1 overflow-y-auto p-6 flex flex-col gap-8 relative">
+  
+  <!-- Demo Section for Confirmation Dialogs -->
+  <div class="bg-surface border border-outline-variant rounded-none p-6 flex flex-col gap-4">
+    <h3 class="font-headline-md text-headline-md font-bold text-on-surface">Dialog Integration Demo</h3>
+    <p class="font-body-md text-body-md text-on-surface-variant">Test the global confirmation modal service across different states:</p>
+    
+    <div class="flex flex-wrap gap-4">
+      <button mat-stroked-button color="warn" (click)="demoDeactivateSkill()" class="!rounded-none !border-error !text-error hover:!bg-error/10">
+        Deactivate Skill
+      </button>
+      <button mat-stroked-button (click)="demoBlockAccount()" class="!rounded-none !border-amber-500 !text-amber-500 hover:!bg-amber-500/10">
+        Block Account
+      </button>
+      <button mat-stroked-button color="primary" (click)="demoDiscardEdits()" class="!rounded-none !border-primary !text-primary hover:!bg-primary/10">
+        Discard Unsaved Edits
+      </button>
+    </div>
+  </div>
+
   <router-outlet></router-outlet>
 </main>
