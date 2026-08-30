@@ -1,9 +1,11 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing-module';
+import { LucideAngularModule } from 'lucide-angular';
+import { MatIconModule } from '@angular/material/icon';
 
 // Import Angular Material Button Module
-import { MatButtonModule } from '@angular/material/button';
+
 
 import { App } from './app';
 
@@ -14,7 +16,8 @@ import { App } from './app';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MatButtonModule // <-- Add it here
+    LucideAngularModule,
+    MatIconModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

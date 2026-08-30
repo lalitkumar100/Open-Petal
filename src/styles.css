@@ -1,3 +1,47 @@
 
-/* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: openpetal;
+}
+
+@plugin "daisyui/theme" {
+  name: "openpetal";
+  default: true;
+  prefersdark: false;
+
+  /* Primary - Ocean Blue */
+  --color-primary: #0284c7;
+  --color-primary-content: #ffffff;
+
+  /* Secondary - Teal */
+  --color-secondary: #0d9488;
+  --color-secondary-content: #ffffff;
+
+  /* Accent - Cyan */
+  --color-accent: #06b6d4;
+  --color-accent-content: #ffffff;
+
+  /* Navy */
+  --color-neutral: #0f2a43;
+  --color-neutral-content: #ffffff;
+
+  /* Light theme */
+  --color-base-100: #ffffff;
+  --color-base-200: #f0f9ff;
+  --color-base-300: #bae6fd;
+  --color-base-content: #0f2a43;
+
+  /* Status */
+  --color-info: #0284c7;
+  --color-success: #14b8a6;
+  --color-warning: #eab308;
+  --color-error: #e05252;
+
+  /* Shape */
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+
+  --border: 1px;
+}
