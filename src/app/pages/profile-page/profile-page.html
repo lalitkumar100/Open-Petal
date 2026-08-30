@@ -1,0 +1,222 @@
+<div class="max-w-5xl mx-auto pb-10">
+  
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="font-display-lg text-[32px] leading-tight text-tertiary-fixed font-bold tracking-tight">My Profile</h1>
+    <p class="font-body-md text-secondary-fixed-dim mt-1">Manage your personal information, account status, and credentials</p>
+  </div>
+
+  <!-- Hero Card -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 mb-6 !rounded-none">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <!-- Left & Middle: Avatar and Details -->
+      <div class="flex items-center gap-6">
+        <!-- Avatar -->
+        <div class="w-20 h-20 rounded-full bg-slate-800 text-cyan-300 font-bold text-2xl flex items-center justify-center border-2 border-cyan-500/40 shrink-0">
+          {{ initials }}
+        </div>
+        
+        <!-- Info -->
+        <div>
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-bold text-slate-800">{{ user.firstName }} {{ user.lastName }}</h2>
+            <div class="badge bg-[#d7f7f5] text-[#086972] font-semibold border-none rounded-sm px-3">{{ user.role }}</div>
+          </div>
+          <p class="text-slate-500 mt-1 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            {{ user.email }}
+          </p>
+        </div>
+      </div>
+      
+      <!-- Right: Actions -->
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex items-center gap-2 text-sm font-medium border border-slate-200 px-3 py-1.5 bg-slate-50">
+          <span class="w-2 h-2 rounded-full" [class.bg-green-500]="user.status === 'ACTIVE'" [class.bg-red-500]="user.status === 'INACTIVE'"></span>
+          {{ user.status === 'ACTIVE' ? 'Active' : 'Inactive' }}
+        </div>
+        <button class="btn btn-outline border-slate-300 text-slate-700 !rounded-none" (click)="toggleEditMode()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-1"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          {{ isEditMode ? 'Cancel Edit' : 'Edit Profile' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 2: Personal Information Card -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 mb-6 !rounded-none">
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[#0e8ca5]"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <h3 class="text-lg font-bold text-slate-800">Personal Information</h3>
+    </div>
+
+    <!-- State A: Read-Only -->
+    <ng-container *ngIf="!isEditMode">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">First Name</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.firstName }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Last Name</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.lastName }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Email</span>
+          <div class="flex items-center gap-2">
+            <span class="text-base text-slate-800 font-medium">{{ user.email }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-slate-400"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Phone Number</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.phone }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Date of Birth</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.dob }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Gender</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.gender }}</span>
+        </div>
+        <div class="md:col-span-2 mt-4">
+          <div class="bg-slate-50 border border-slate-200 p-4 flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">Account Discoverability</h4>
+              <p class="text-sm text-slate-500 mt-0.5">Toggle to set your account to active or paused state.</p>
+            </div>
+            <label class="label cursor-pointer p-0">
+              <input type="checkbox" class="toggle toggle-accent" [checked]="user.status === 'ACTIVE'" (change)="toggleAccountStatus()" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- State B: Edit Mode -->
+    <ng-container *ngIf="isEditMode">
+      <form (submit)="saveProfile($event)">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">First Name</span></label>
+            <input type="text" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.firstName" name="firstName" required />
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Last Name</span></label>
+            <input type="text" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.lastName" name="lastName" required />
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Email</span></label>
+            <input type="email" class="input input-bordered w-full !rounded-none bg-slate-100 cursor-not-allowed text-slate-500" [value]="editForm.email" disabled />
+            <label class="label py-1"><span class="label-text-alt text-slate-500">Email cannot be modified</span></label>
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Phone Number</span></label>
+            <input type="tel" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.phone" name="phone" required />
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Date of Birth</span></label>
+            <input type="date" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.dob" name="dob" />
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Gender</span></label>
+            <select class="select select-bordered w-full !rounded-none" [(ngModel)]="editForm.gender" name="gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-end gap-3 border-t border-slate-100 pt-4">
+          <button type="button" class="btn btn-outline border-slate-300 text-slate-600 !rounded-none px-6" (click)="cancelEdit()">Cancel</button>
+          <button type="submit" class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none px-6">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-1.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+
+  <!-- Section 3: Security & Password -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[#0e8ca5]"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <h3 class="text-lg font-bold text-slate-800">Security & Password</h3>
+    </div>
+    
+    <form (submit)="updatePassword($event)" class="max-w-md space-y-4">
+      <div class="form-control w-full">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Current Password</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-50"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input [type]="showCurrentPassword ? 'text' : 'password'" class="grow" placeholder="••••••••" [(ngModel)]="passwordForm.currentPassword" name="currentPassword" required />
+          <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="showCurrentPassword = !showCurrentPassword">
+            <svg *ngIf="!showCurrentPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showCurrentPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+          </button>
+        </label>
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">New Password</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-50"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input [type]="showNewPassword ? 'text' : 'password'" class="grow" placeholder="••••••••" [(ngModel)]="passwordForm.newPassword" name="newPassword" required minlength="8" />
+          <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="showNewPassword = !showNewPassword">
+            <svg *ngIf="!showNewPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showNewPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+          </button>
+        </label>
+        <label class="label py-1"><span class="label-text-alt text-slate-500">Must be at least 8 characters long</span></label>
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Confirm New Password</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none" [class.input-error]="passwordForm.newPassword && passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-50"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input [type]="showConfirmPassword ? 'text' : 'password'" class="grow" placeholder="••••••••" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword" required />
+          <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="showConfirmPassword = !showConfirmPassword">
+            <svg *ngIf="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+          </button>
+        </label>
+        <label class="label py-1" *ngIf="passwordForm.newPassword && passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword">
+          <span class="label-text-alt text-error font-medium">Passwords do not match!</span>
+        </label>
+      </div>
+
+      <div class="mt-4 pt-2">
+        <button type="submit" class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none" [disabled]="!passwordForm.currentPassword || !passwordForm.newPassword || passwordForm.newPassword !== passwordForm.confirmPassword || isUpdatingPassword">
+          <svg *ngIf="!isUpdatingPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-1.5"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>
+          <span *ngIf="isUpdatingPassword" class="loading loading-spinner loading-sm mr-1.5"></span>
+          {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DaisyUI Confirmation Modal for Saving Profile -->
+<dialog id="saveConfirmDialog" class="modal">
+  <div class="modal-box !rounded-none">
+    <h3 class="font-bold text-lg text-slate-800">Confirm Profile Update</h3>
+    <p class="py-4 text-slate-600">Are you sure you want to save these changes to your personal information?</p>
+    <div class="modal-action">
+      <form method="dialog" class="flex gap-3">
+        <button class="btn btn-outline border-slate-300 text-slate-600 !rounded-none" (click)="cancelSaveProfile()">Cancel</button>
+        <button class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none" (click)="confirmSaveProfile()">
+          <span *ngIf="isSaving" class="loading loading-spinner loading-sm mr-1.5"></span>
+          Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop" (click)="cancelSaveProfile()">
+    <button>close</button>
+  </form>
+</dialog>

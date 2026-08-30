@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-sidebar-component',
@@ -6,7 +6,4 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   templateUrl: './sidebar-component.html',
   styleUrl: './sidebar-component.css',
 })
-export class SidebarComponent {
-  @Input() isOpen = false;
-  @Output() closeSidebar = new EventEmitter<void>();
-}
+export class SidebarComponent {}

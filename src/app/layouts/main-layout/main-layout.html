@@ -1,11 +1,19 @@
-<div class="bg-background font-body-md text-on-surface h-screen flex overflow-hidden relative">
-  <!-- Mobile Overlay -->
-  <div *ngIf="isSidebarOpen" (click)="isSidebarOpen = false" class="fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity"></div>
-  
-  <app-sidebar-component [isOpen]="isSidebarOpen" (closeSidebar)="isSidebarOpen = false"></app-sidebar-component>
-  
-  <div class="flex-1 flex flex-col h-full w-full lg:ml-[280px] lg:w-[calc(100%-280px)] bg-surface transition-all duration-300">
-    <app-breadcrumb-component (menuClick)="toggleSidebar()"></app-breadcrumb-component>
-    <app-main-area-component></app-main-area-component>
-  </div>
+<div class="drawer lg:drawer-open" data-theme="openpetal-light">
+    <input id="my-drawer-4" type="checkbox" class="drawer-toggle inline" />
+    
+    <div class="drawer-content flex flex-col h-screen">
+        <!-- Navbar / Breadcrumb Component -->
+        <app-breadcrumb-component></app-breadcrumb-component>
+        
+        <!-- Page content here -->
+        <main class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
+            <app-main-area-component></app-main-area-component>
+        </main>
+    </div>
+
+    <!-- Sidebar Component Wrapper -->
+    <div class="drawer-side is-drawer-close:overflow-visible z-20">
+        <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+        <app-sidebar-component class="h-full"></app-sidebar-component>
+    </div>
 </div>

@@ -1,21 +1,18 @@
-<!-- TopAppBar -->
-<header class="flex justify-between items-center h-16 px-6 w-full border-b border-outline-variant bg-surface shrink-0">
-    <!-- Breadcrumbs / Left -->
-    <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
-        <!-- Hamburger Menu (Mobile Only) -->
-        <button mat-icon-button
-            class="lg:hidden -ml-2 mr-2 text-on-surface transition-colors cursor-pointer"
-            (click)="menuClick.emit()">
-            <mat-icon>menu</mat-icon>
-        </button>
-        <span class="text-primary font-bold">Dashboard</span>
+<nav class="navbar w-full bg-primary/10 px-4">
+    <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost drawer-button">
+        <!-- lucide: menu -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="my-1.5 inline-block size-5">
+            <line x1="4" x2="20" y1="12" y2="12" />
+            <line x1="4" x2="20" y1="6" y2="6" />
+            <line x1="4" x2="20" y1="18" y2="18" />
+        </svg>
+    </label>
+    <div class="breadcrumbs text-sm px-2">
+        <ul>
+            <li *ngFor="let crumb of breadcrumbs; let last = last">
+                <a *ngIf="!last" [routerLink]="crumb.url">{{ crumb.label }}</a>
+                <span *ngIf="last">{{ crumb.label }}</span>
+            </li>
+        </ul>
     </div>
-
-    <!-- Trailing Actions / Right -->
-    <div class="flex items-center gap-4 text-primary">
-        <!-- Status Badge -->
-        <button mat-icon-button class="hover:text-tertiary-container transition-colors">
-            <mat-icon matBadge="!" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
-        </button>
-    </div>
-</header>
+</nav>

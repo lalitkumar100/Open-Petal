@@ -18,13 +18,14 @@ import { BreadcrumbComponent } from './components/breadcrumb-component/breadcrum
 import { App } from './app';
 import { MainAreaComponent } from './components/main-area-component/main-area-component';
 import { LoaderComponent } from './components/loader/loader';
-import { LoginCarousel } from './components/login-carousel/login-carousel';
+import { UniversalCarousel } from './components/universal-carousel/universal-carousel';
 import { LoginForm } from './components/login-form/login-form';
 import { LoginPage } from './pages/login-page/login-page';
 import { RegisterForm } from './components/register-form/register-form';
 import { RegisterPage } from './pages/register-page/register-page';
 import { ForgotPasswordForm } from './components/forgot-password-form/forgot-password-form';
 import { ForgotPasswordPage } from './pages/forgot-password-page/forgot-password-page';
+import { ProfilePage } from './pages/profile-page/profile-page';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -35,13 +36,14 @@ import { FormsModule } from '@angular/forms';
     BreadcrumbComponent,
     MainAreaComponent,
     LoaderComponent,
-    LoginCarousel,
+    UniversalCarousel,
     LoginForm,
     LoginPage,
     RegisterForm,
     RegisterPage,
     ForgotPasswordForm,
     ForgotPasswordPage,
+    ProfilePage,
   ],
   imports: [
     BrowserModule,

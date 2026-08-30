@@ -8,34 +8,59 @@
   </div>
   <form class="flex flex-col w-full space-y-1 mt-2">
     <!-- Email Input -->
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Email Address</mat-label>
-      <mat-icon matPrefix class="mr-2 opacity-70">mail</mat-icon>
-      <input matInput type="email" placeholder="name@company.com" id="email" />
-    </mat-form-field>
+    <div class="form-control w-full">
+      <label class="label py-1"><span class="label-text font-medium text-base-content/80">Email Address</span></label>
+      <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </g>
+        </svg>
+        <input type="email" class="grow" placeholder="mail@site.com" id="email" required />
+      </label>
+      <div class="validator-hint hidden text-xs mt-1 text-error">Enter valid email address</div>
+    </div>
 
     <!-- Password Input -->
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Password</mat-label>
-      <mat-icon matPrefix class="mr-2 opacity-70">lock</mat-icon>
-      <input matInput type="password" placeholder="••••••••" id="password" />
-      <button mat-icon-button matSuffix type="button">
-        <mat-icon>visibility</mat-icon>
-      </button>
-    </mat-form-field>
+    <div class="form-control w-full mt-2">
+      <label class="label py-1"><span class="label-text font-medium text-base-content/80">Password</span></label>
+      <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+            <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+            <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+          </g>
+        </svg>
+        <input type="password" class="grow" placeholder="Password" id="password" required minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must be more than 8 characters, including number, lowercase letter, uppercase letter" />
+        <button type="button" class="btn btn-ghost btn-xs btn-square">
+          <!-- lucide: eye -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 opacity-70"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </label>
+      <p class="validator-hint hidden text-xs mt-1 text-error leading-tight">
+        Must be more than 8 characters, including<br />
+        At least one number<br />
+        At least one lowercase letter<br />
+        At least one uppercase letter
+      </p>
+    </div>
 
     <!-- Remember Me / Forgot Password -->
-    <div class="flex items-center justify-between pb-4 mt-[-10px]">
-      <mat-checkbox color="primary" class="text-secondary-fixed-dim">Remember me</mat-checkbox>
+    <div class="flex items-center justify-between pb-4 mt-2">
+      <label class="label cursor-pointer justify-start gap-2">
+        <input type="checkbox" class="checkbox checkbox-primary checkbox-sm !rounded-none" />
+        <span class="label-text text-secondary-fixed-dim">Remember me</span>
+      </label>
       <a class="font-label-sm text-label-sm text-tertiary-fixed hover:text-tertiary-fixed-dim transition-colors" routerLink="/forgot-password">Forgot Password?</a>
     </div>
 
     <!-- Actions -->
-    <div class="flex flex-col gap-4">
-      <button mat-flat-button color="primary" class="w-full !py-6 !rounded-lg !text-[16px] glow-effect" type="submit">
+    <div class="flex flex-col gap-3 mt-2">
+      <button class="btn btn-primary w-full !rounded-none !h-12 text-[16px] glow-effect" type="submit">
         Login
       </button>
-      <button mat-stroked-button class="w-full !py-6 !rounded-lg !text-[16px] text-on-primary" type="button">
+      <button class="btn btn-outline w-full !rounded-none !h-12 text-[16px] text-on-primary bg-transparent" type="button">
         Sign up with Google
       </button>
     </div>
