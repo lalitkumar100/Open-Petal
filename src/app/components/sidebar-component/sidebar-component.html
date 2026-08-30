@@ -1,0 +1,57 @@
+<div class="flex min-h-full h-full flex-col items-start bg-base-100 is-drawer-close:w-14 is-drawer-open:w-64 transition-all duration-300 border-r border-primary/20 shadow-md">
+    <!-- Logo Header -->
+    <div class="h-16 flex items-center justify-center w-full border-b border-base-300 shrink-0 px-2 overflow-hidden">
+        <div class="flex items-center text-xl font-bold text-base-content gap-0.5">
+            <!-- Loader.gif serving as the 'O' -->
+            <img src="/logo.svg" alt="O" class="w-7 h-7 object-contain shrink-0 animate-[spin_8s_linear_infinite]" />
+            <span class="is-drawer-close:hidden whitespace-nowrap">pen Petal</span>
+        </div>
+    </div>
+
+    <!-- Sidebar content here -->
+    <ul class="menu w-full grow mt-2">
+        <!-- List item -->
+        <li>
+            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right !rounded-none hover:text-primary" data-tip="Homepage" [routerLink]="basePath + '/home'">
+                <!-- lucide: home -->
+                <mat-icon class="my-1.5 inline-block size-5">home</mat-icon>
+                <span class="is-drawer-close:hidden font-semibold">Homepage</span>
+            </button>
+        </li>
+
+        <!-- List item -->
+        <li>
+            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right !rounded-none hover:text-primary" data-tip="Settings">
+                <!-- lucide: settings -->
+                <mat-icon class="my-1.5 inline-block size-5">settings</mat-icon>
+                <span class="is-drawer-close:hidden font-semibold">Settings</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Footer with Profile Avatar and Logout -->
+    <div class="p-2 border-t border-base-300 w-full shrink-0 flex flex-col gap-2">
+        <!-- Profile Info Button -->
+        <button [routerLink]="basePath + '/profile'" class="is-drawer-close:tooltip is-drawer-close:tooltip-right btn btn-ghost h-auto flex items-center p-2 w-full justify-start is-drawer-close:justify-center overflow-hidden !rounded-none normal-case hover:text-primary" data-tip="Profile">
+            <div class="avatar placeholder shrink-0">
+                <div class="bg-neutral text-neutral-content w-8 h-8 flex items-center justify-center !rounded-none">
+                    <span class="text-xs font-bold">{{ userInitials }}</span>
+                </div>
+            </div>
+            <div class="is-drawer-close:hidden flex flex-col ml-3 text-left overflow-hidden min-w-0 w-full pr-1">
+                <div class="flex items-center gap-1.5 w-full">
+                    <span class="text-base-content font-bold text-sm truncate leading-tight">{{ userProfile.fullName }}</span>
+                    <span *ngIf="userProfile.role" class="badge bg-[#d7f7f5] text-[#086972] border-none text-[10px] px-1.5 h-4 !rounded-none">{{ userProfile.role.replace('ROLE_', '') }}</span>
+                </div>
+                <span class="text-base-content/60 text-xs truncate leading-tight mt-0.5">{{ userProfile.email }}</span>
+            </div>
+        </button>
+
+        <!-- Logout Button -->
+        <button (click)="logout()" class="btn btn-ghost text-error hover:bg-error/10 w-full justify-start !rounded-none px-2 is-drawer-close:justify-center">
+            <!-- lucide: log-out -->
+            <mat-icon class="my-1.5 inline-block size-5 shrink-0">logout</mat-icon>
+            <span class="is-drawer-close:hidden ml-2 font-semibold">Logout</span>
+        </button>
+    </div>
+</div>

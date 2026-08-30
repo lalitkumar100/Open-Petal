@@ -1,0 +1,19 @@
+<div class="drawer lg:drawer-open" data-theme="openpetal-light">
+    <input id="my-drawer-4" type="checkbox" class="drawer-toggle inline" />
+    
+    <div class="drawer-content flex flex-col h-screen">
+        <!-- Navbar / Breadcrumb Component -->
+        <app-breadcrumb-component></app-breadcrumb-component>
+        
+        <!-- Page content here -->
+        <main class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
+            <app-main-area-component></app-main-area-component>
+        </main>
+    </div>
+
+    <!-- Sidebar Component Wrapper -->
+    <div class="drawer-side is-drawer-close:overflow-visible z-20">
+        <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+        <app-sidebar-component class="h-full"></app-sidebar-component>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="p-6">
+  <h1 class="text-3xl font-bold text-slate-800 mb-2">My Dashboard</h1>
+  <p class="text-slate-500 mb-6">Welcome back! Here's your recent activity and updates.</p>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
+      <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+        <mat-icon class="text-[#0e8ca5] mr-2">notifications</mat-icon>
+        <h3 class="text-lg font-bold text-slate-700">Recent Notifications</h3>
+      </div>
+      <ul class="space-y-3">
+        <li class="text-slate-600 text-sm">Your profile was updated successfully.</li>
+        <li class="text-slate-600 text-sm">Welcome to Open Petal!</li>
+      </ul>
+    </div>
+    <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
+      <div class="flex items-center mb-4 border-b border-slate-100 pb-2">
+        <mat-icon class="text-[#0e8ca5] mr-2">star</mat-icon>
+        <h3 class="text-lg font-bold text-slate-700">Quick Actions</h3>
+      </div>
+      <div class="flex flex-col gap-2">
+        <a routerLink="/user/profile" class="btn btn-outline border-slate-300 text-slate-700 !rounded-none w-full justify-start">
+          <mat-icon class="mr-2">person</mat-icon> View Profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

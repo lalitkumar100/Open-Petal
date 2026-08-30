@@ -1,0 +1,14 @@
+<nav class="navbar w-full bg-primary/10 px-4">
+    <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost drawer-button">
+        <!-- lucide: menu -->
+        <mat-icon class="my-1.5 inline-block size-5">menu</mat-icon>
+    </label>
+    <div class="breadcrumbs text-sm px-2">
+        <ul>
+            <li *ngFor="let crumb of breadcrumbs; let last = last">
+                <a *ngIf="!last" [routerLink]="crumb.url">{{ crumb.label }}</a>
+                <span *ngIf="last">{{ crumb.label }}</span>
+            </li>
+        </ul>
+    </div>
+</nav>

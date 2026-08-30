@@ -1,0 +1,107 @@
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none"></div>
+<div class="w-full max-w-md relative z-10 bg-on-secondary-fixed-variant/40 p-6 rounded-xl border border-outline-variant/20 backdrop-blur-md shadow-2xl mx-auto max-h-[95vh] overflow-y-auto overflow-x-hidden custom-scrollbar">
+  <div class="flex flex-col items-center mb-6 mt-2">
+    <img alt="Open Petal Logo" class="w-16 h-auto mb-4 animate-[spin_8s_linear_infinite]" src="/logo.svg"/>
+    <h1 class="font-display-lg text-[32px] leading-tight text-tertiary-fixed font-bold tracking-tight text-center">Create Account</h1>
+    <p class="font-body-md text-body-md text-secondary-fixed-dim mt-2 text-center">Join Open Petal today.</p>
+  </div>
+  <form class="flex flex-col w-full space-y-1 mt-2" (ngSubmit)="onSubmit()">
+    <!-- Messages -->
+    <div *ngIf="errorMessage" class="text-sm text-error bg-error/10 p-2 rounded mb-2 border border-error/20">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="text-sm text-success bg-success/10 p-2 rounded mb-2 border border-success/20">{{ successMessage }}</div>
+    
+    <!-- Name Row -->
+    <div class="flex gap-4">
+      <div class="form-control flex-1">
+        <label class="label py-1"><span class="label-text font-medium text-base-content/80">First Name</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+          <mat-icon class="h-[1em] opacity-50">person</mat-icon>
+          <input type="text" class="grow w-full" placeholder="John" id="firstName" name="firstName" [(ngModel)]="firstName" required />
+        </label>
+        <div class="validator-hint hidden text-xs mt-1 text-error">First name required</div>
+      </div>
+      <div class="form-control flex-1">
+        <label class="label py-1"><span class="label-text font-medium text-base-content/80">Last Name</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+          <input type="text" class="grow w-full" placeholder="Doe" id="lastName" name="lastName" [(ngModel)]="lastName" required />
+        </label>
+        <div class="validator-hint hidden text-xs mt-1 text-error">Last name required</div>
+      </div>
+    </div>
+    
+    <!-- Email Input -->
+    <div class="form-control w-full mt-2">
+      <label class="label py-1"><span class="label-text font-medium text-base-content/80">Email Address</span></label>
+      <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+        <mat-icon class="h-[1em] opacity-50">mail</mat-icon>
+        <input type="email" class="grow" placeholder="mail@site.com" id="email" name="email" [(ngModel)]="email" required />
+      </label>
+      <div class="validator-hint hidden text-xs mt-1 text-error">Enter valid email address</div>
+    </div>
+    
+    <!-- DOB Input -->
+    <div class="form-control w-full mt-2">
+      <label class="label py-1"><span class="label-text font-medium text-base-content/80">Date of Birth</span></label>
+      <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+        <mat-icon class="h-[1em] opacity-50">calendar_today</mat-icon>
+        <input type="datetime-local" class="grow bg-transparent" id="dob" name="dob" [(ngModel)]="dob" style="color-scheme: light;" required />
+      </label>
+      <div class="validator-hint hidden text-xs mt-1 text-error">Date of birth is required</div>
+    </div>
+    
+    <!-- Password Input -->
+    <div class="form-control w-full mt-2">
+      <label class="label py-1"><span class="label-text font-medium text-base-content/80">Password</span></label>
+      <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+        <mat-icon class="h-[1em] opacity-50">lock</mat-icon>
+        <input type="password" class="grow" required placeholder="Password" id="password" name="password" [(ngModel)]="password" minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must be more than 8 characters, including number, lowercase letter, uppercase letter" />
+        <button type="button" class="btn btn-ghost btn-xs btn-square -ml-2 relative z-10">
+          <mat-icon class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem; line-height: 1rem;">visibility</mat-icon>
+        </button>
+      </label>
+      <p class="validator-hint hidden text-xs mt-1 text-error leading-tight">
+        Must be more than 8 characters, including<br />
+        At least one number<br />
+        At least one lowercase letter<br />
+        At least one uppercase letter
+      </p>
+    </div>
+    
+    <!-- Confirm Password Input -->
+    <div class="form-control w-full mt-2">
+      <label class="label py-1"><span class="label-text font-medium text-base-content/80">Confirm Password</span></label>
+      <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
+        <mat-icon class="h-[1em] opacity-50">lock</mat-icon>
+        <input type="password" class="grow" required placeholder="Password" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword" minlength="8" />
+        <button type="button" class="btn btn-ghost btn-xs btn-square -ml-2 relative z-10">
+          <mat-icon class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem; line-height: 1rem;">visibility</mat-icon>
+        </button>
+      </label>
+      <div class="validator-hint hidden text-xs mt-1 text-error">Passwords must match</div>
+    </div>
+    
+    <!-- Terms and Conditions -->
+    <div class="pt-4 pb-4">
+      <label class="label cursor-pointer justify-start gap-3 items-start">
+        <input type="checkbox" class="checkbox checkbox-primary checkbox-sm !rounded-none mt-1" name="termsAgreed" [(ngModel)]="termsAgreed" required />
+        <span class="label-text text-secondary-fixed-dim whitespace-normal leading-tight">
+          I agree to the <a href="#" class="text-tertiary-fixed hover:underline" (click)="$event.stopPropagation()">Terms & Conditions</a> and <a href="#" class="text-tertiary-fixed hover:underline" (click)="$event.stopPropagation()">Privacy Policy</a>
+        </span>
+      </label>
+    </div>
+    
+    <!-- Actions -->
+    <div class="pt-2">
+      <button class="btn btn-primary w-full !rounded-none !h-12 text-[16px] glow-effect" type="submit" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="loading loading-spinner"></span>
+        {{ isLoading ? 'Registering...' : 'Register' }}
+      </button>
+    </div>
+  </form>
+  <div class="mt-6 text-center">
+    <p class="font-body-md text-body-md text-secondary-fixed-dim">
+      Already have an account? 
+      <a class="text-tertiary-fixed hover:text-tertiary-fixed-dim font-medium transition-colors ml-1" routerLink="/login">Sign In</a>
+    </p>
+  </div>
+</div>
