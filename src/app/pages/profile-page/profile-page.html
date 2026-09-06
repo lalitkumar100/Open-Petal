@@ -25,9 +25,15 @@
         
         <!-- Info -->
         <div>
-          <div class="flex items-center gap-3">
-            <h2 class="text-xl font-bold text-slate-800">{{ user.firstName }} {{ user.lastName }}</h2>
-            <div class="badge bg-[#d7f7f5] text-[#086972] font-semibold border-none rounded-sm px-3">{{ user.role }}</div>
+          <div class="flex flex-wrap items-center gap-3">
+            <h2 class="text-xl font-bold text-slate-800 whitespace-nowrap">{{ user.firstName }} {{ user.lastName }}</h2>
+            <div class="flex items-center gap-2">
+              <div class="badge bg-[#d7f7f5] text-[#086972] font-semibold border-none rounded-sm px-3 whitespace-nowrap">{{ user.role }}</div>
+              <div class="badge bg-amber-100 text-amber-700 font-semibold border-none rounded-sm px-3 flex items-center gap-1 whitespace-nowrap">
+                <mat-icon class="w-3.5 h-3.5" style="font-size: 0.875rem; width: 0.875rem; height: 0.875rem;">monetization_on</mat-icon>
+                {{ user.credit || 0 }} Credits
+              </div>
+            </div>
           </div>
           <p class="text-slate-500 mt-1 flex items-center gap-1.5">
             <mat-icon class="w-4 h-4 mr-1.5" style="font-size: 1rem; width: 1rem; height: 1rem;">mail</mat-icon>
@@ -88,6 +94,10 @@
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Gender</span>
           <span class="text-base text-slate-800 font-medium">{{ user.gender }}</span>
         </div>
+        <div class="md:col-span-2">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">About Me</span>
+          <p class="text-base text-slate-800 font-medium whitespace-pre-wrap">{{ user.description || 'No description provided.' }}</p>
+        </div>
         <div class="md:col-span-2 mt-4">
           <div class="bg-slate-50 border border-slate-200 p-4 flex items-center justify-between">
             <div>
@@ -104,7 +114,7 @@
 
     <!-- State B: Edit Mode -->
     <ng-container *ngIf="isEditMode">
-      <form (submit)="saveProfile($event)">
+      <form #profileForm="ngForm" (submit)="saveProfile($event)">
         <div *ngIf="profileError" class="mb-4 text-sm text-error bg-error/10 p-2 rounded border border-error/20">
           {{ profileError }}
         </div>
@@ -124,31 +134,116 @@
           </div>
           <div class="form-control w-full">
             <label class="label py-1"><span class="label-text font-semibold text-slate-600">Phone Number</span></label>
-            <input type="tel" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.phone" name="phone" required />
+            <input type="tel" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.phone" name="phone" required pattern="[0-9]{10}" #phoneInput="ngModel" />
+            <label class="label py-1" *ngIf="phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)">
+              <span class="label-text-alt text-error font-medium">Must be exactly 10 digits</span>
+            </label>
           </div>
           <div class="form-control w-full">
             <label class="label py-1"><span class="label-text font-semibold text-slate-600">Date of Birth</span></label>
-            <input type="date" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.dob" name="dob" />
+            <input type="date" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.dob" name="dob" required [max]="maxDob" #dobInput="ngModel" />
+            <label class="label py-1" *ngIf="dobInput.invalid && (dobInput.dirty || dobInput.touched)">
+              <span class="label-text-alt text-error font-medium">Must be at least 18 years old</span>
+            </label>
           </div>
           <div class="form-control w-full">
             <label class="label py-1"><span class="label-text font-semibold text-slate-600">Gender</span></label>
-            <select class="select select-bordered w-full !rounded-none" [(ngModel)]="editForm.gender" name="gender">
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+            <select class="select select-bordered w-full !rounded-none" [(ngModel)]="editForm.gender" name="gender" required>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
             </select>
+          </div>
+          <div class="form-control w-full md:col-span-2">
+            <label class="label py-1">
+              <span class="label-text font-semibold text-slate-600">About Me</span>
+              <span class="label-text-alt" [class.text-error]="(editForm.description?.length || 0) > 300">{{ editForm.description?.length || 0 }}/300</span>
+            </label>
+            <textarea class="textarea textarea-bordered w-full p-3 h-24 !rounded-none" [(ngModel)]="editForm.description" name="description" placeholder="Write something about yourself..." maxlength="300"></textarea>
           </div>
         </div>
         
         <div class="mt-8 flex justify-end gap-3 border-t border-slate-100 pt-4">
           <button type="button" class="btn btn-outline border-slate-300 text-slate-600 !rounded-none px-6" (click)="cancelEdit()">Cancel</button>
-          <button type="submit" class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none px-6">
+          <button type="submit" class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none px-6" [disabled]="profileForm.invalid">
             <mat-icon class="w-4 h-4 mr-1.5" style="font-size: 1rem; width: 1rem; height: 1rem;">save</mat-icon>
             Save Changes
           </button>
         </div>
       </form>
     </ng-container>
+  </div>
+
+  <!-- Section: Availability Slots -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 mb-6 !rounded-none">
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <mat-icon class="w-5 h-5 text-[#0e8ca5]">schedule</mat-icon>
+      <h3 class="text-lg font-bold text-slate-800">Weekly Availability</h3>
+    </div>
+
+    <!-- Add Slot Form -->
+    <div class="bg-slate-50 p-4 border border-slate-200 mb-6 flex flex-wrap items-end gap-4">
+      <div class="form-control w-full sm:w-auto flex-1">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Day of Week</span></label>
+        <select class="select select-bordered w-full !rounded-none" [(ngModel)]="newSlot.dayOfWeek">
+          <option value="MONDAY">Monday</option>
+          <option value="TUESDAY">Tuesday</option>
+          <option value="WEDNESDAY">Wednesday</option>
+          <option value="THURSDAY">Thursday</option>
+          <option value="FRIDAY">Friday</option>
+          <option value="SATURDAY">Saturday</option>
+          <option value="SUNDAY">Sunday</option>
+        </select>
+      </div>
+      <div class="form-control w-full sm:w-auto flex-1">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Start Time</span></label>
+        <input type="time" class="input input-bordered w-full !rounded-none" [(ngModel)]="newSlot.startTime" />
+      </div>
+      <div class="form-control w-full sm:w-auto flex-1">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">End Time</span></label>
+        <input type="time" class="input input-bordered w-full !rounded-none" [(ngModel)]="newSlot.endTime" />
+      </div>
+      <div class="w-full sm:w-auto mt-2 sm:mt-0">
+        <button class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none w-full" (click)="onAddSlot()" [disabled]="isAddingSlot">
+          <span *ngIf="isAddingSlot" class="loading loading-spinner loading-sm"></span>
+          <mat-icon *ngIf="!isAddingSlot" class="w-4 h-4 mr-1">add</mat-icon>
+          Add Slot
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="slotError" class="mb-4 text-sm text-error bg-error/10 p-2 rounded border border-error/20">
+      {{ slotError }}
+    </div>
+
+    <!-- Existing Slots List -->
+    <div class="overflow-x-auto border border-slate-200">
+      <table class="table table-zebra w-full">
+        <thead class="bg-slate-100 text-slate-600">
+          <tr>
+            <th>Day</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th class="w-16">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="availabilitySlots.length === 0">
+            <td colspan="4" class="text-center py-8 text-slate-500">No availability slots added yet.</td>
+          </tr>
+          <tr *ngFor="let slot of availabilitySlots">
+            <td class="font-medium capitalize">{{ slot.dayOfWeek.toLowerCase() }}</td>
+            <td>{{ slot.startTime }}</td>
+            <td>{{ slot.endTime }}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm text-error" (click)="onRemoveSlot(slot)">
+                <mat-icon class="w-4 h-4" style="font-size: 1rem; width: 1rem; height: 1rem;">delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Section 3: Security & Password -->

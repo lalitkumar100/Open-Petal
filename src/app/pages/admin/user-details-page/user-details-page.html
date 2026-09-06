@@ -1,0 +1,120 @@
+<div class="p-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
+    <div class="flex items-center gap-4">
+      <div class="avatar">
+        <div class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+          <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" />
+        </div>
+      </div>
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">John Doe</h1>
+        <p class="mt-1 text-sm text-slate-500">Member since 2023</p>
+      </div>
+    </div>
+    <!-- Action Button Group -->
+    <div class="flex flex-wrap items-center gap-3">
+      <button class="btn btn-outline btn-primary !rounded-none" (click)="goToInbox()">
+        <mat-icon class="mr-1">message</mat-icon> Message
+      </button>
+      <button class="btn btn-error !rounded-none text-white">
+        <mat-icon class="mr-1">block</mat-icon> Suspend User
+      </button>
+    </div>
+  </div>
+
+  <!-- Tables Container Stack -->
+  <div class="mt-8 space-y-8">
+    <!-- Skills They Can Teach Section -->
+    <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none">
+      <div class="card-body p-0">
+        <div class="p-5 sm:px-6 border-b border-slate-100 flex justify-between items-center">
+          <div>
+            <h2 class="text-base font-semibold text-slate-900">Skills They Can Teach</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Areas of expertise offered by this user.</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr class="bg-base-200/50">
+                <th>Skill Name</th>
+                <th>Level</th>
+                <th>Rating</th>
+                <th>People Taught</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hover">
+                <td class="font-semibold text-slate-900">React JS</td>
+                <td>
+                  <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-success">
+                    ADVANCED
+                  </span>
+                </td>
+                <td>
+                  <span class="flex items-center text-slate-700">
+                    <mat-icon class="text-amber-400 mr-1 text-[18px] w-[18px] h-[18px]">star</mat-icon>
+                    4.8
+                  </span>
+                </td>
+                <td class="text-slate-600">45</td>
+              </tr>
+              <tr class="hover">
+                <td class="font-semibold text-slate-900">Node JS</td>
+                <td>
+                  <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-info">
+                    INTERMEDIATE
+                  </span>
+                </td>
+                <td>
+                  <span class="flex items-center text-slate-700">
+                    <mat-icon class="text-amber-400 mr-1 text-[18px] w-[18px] h-[18px]">star</mat-icon>
+                    4.2
+                  </span>
+                </td>
+                <td class="text-slate-600">12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learning Goals Section -->
+    <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none">
+      <div class="card-body p-0">
+        <div class="p-5 sm:px-6 border-b border-slate-100">
+          <h2 class="text-base font-semibold text-slate-900">Learning Goals</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Skills this user wants to improve.</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr class="bg-base-200/50">
+                <th>Skill Name</th>
+                <th>Current Level</th>
+                <th>Target Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hover">
+                <td class="font-semibold text-slate-900">Python</td>
+                <td>
+                  <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-warning">
+                    BEGINNER
+                  </span>
+                </td>
+                <td>
+                  <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-info">
+                    INTERMEDIATE
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

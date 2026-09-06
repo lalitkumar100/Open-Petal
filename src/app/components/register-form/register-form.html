@@ -44,7 +44,7 @@
       <label class="label py-1"><span class="label-text font-medium text-base-content/80">Date of Birth</span></label>
       <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
         <mat-icon class="h-[1em] opacity-50">calendar_today</mat-icon>
-        <input type="datetime-local" class="grow bg-transparent" id="dob" name="dob" [(ngModel)]="dob" style="color-scheme: light;" required />
+        <input type="date" class="grow bg-transparent" id="dob" name="dob" [(ngModel)]="dob" style="color-scheme: light;" required />
       </label>
       <div class="validator-hint hidden text-xs mt-1 text-error">Date of birth is required</div>
     </div>
@@ -54,9 +54,9 @@
       <label class="label py-1"><span class="label-text font-medium text-base-content/80">Password</span></label>
       <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
         <mat-icon class="h-[1em] opacity-50">lock</mat-icon>
-        <input type="password" class="grow" required placeholder="Password" id="password" name="password" [(ngModel)]="password" minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must be more than 8 characters, including number, lowercase letter, uppercase letter" />
-        <button type="button" class="btn btn-ghost btn-xs btn-square -ml-2 relative z-10">
-          <mat-icon class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem; line-height: 1rem;">visibility</mat-icon>
+        <input [type]="showPassword ? 'text' : 'password'" class="grow" required placeholder="Password" id="password" name="password" [(ngModel)]="password" minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must be more than 8 characters, including number, lowercase letter, uppercase letter" />
+        <button type="button" class="btn btn-ghost btn-xs btn-square -ml-2 relative z-10" (click)="togglePasswordVisibility()">
+          <mat-icon class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem; line-height: 1rem;">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
       </label>
       <p class="validator-hint hidden text-xs mt-1 text-error leading-tight">
@@ -72,9 +72,9 @@
       <label class="label py-1"><span class="label-text font-medium text-base-content/80">Confirm Password</span></label>
       <label class="input input-bordered flex items-center gap-2 !rounded-none bg-transparent validator">
         <mat-icon class="h-[1em] opacity-50">lock</mat-icon>
-        <input type="password" class="grow" required placeholder="Password" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword" minlength="8" />
-        <button type="button" class="btn btn-ghost btn-xs btn-square -ml-2 relative z-10">
-          <mat-icon class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem; line-height: 1rem;">visibility</mat-icon>
+        <input [type]="showConfirmPassword ? 'text' : 'password'" class="grow" required placeholder="Password" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmPassword" minlength="8" />
+        <button type="button" class="btn btn-ghost btn-xs btn-square -ml-2 relative z-10" (click)="toggleConfirmPasswordVisibility()">
+          <mat-icon class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem; line-height: 1rem;">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
       </label>
       <div class="validator-hint hidden text-xs mt-1 text-error">Passwords must match</div>

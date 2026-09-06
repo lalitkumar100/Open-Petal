@@ -1,0 +1,382 @@
+<div class="p-6">
+  <!-- Loading & Error -->
+  <app-loader [isLoading]="isLoading" mode="flow" size="w-32 h-32"></app-loader>
+  <div *ngIf="error" class="alert alert-error max-w-lg mx-auto mt-8">
+    <mat-icon>error</mat-icon> {{ error }}
+  </div>
+
+  <ng-container *ngIf="userDetails && !isLoading">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
+      <div class="flex items-center gap-4">
+        <div class="avatar placeholder">
+          <div
+            class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 bg-blue-500 text-white flex items-center justify-center">
+            <span class="text-2xl font-bold">{{ getInitials(userDetails.userInfo.firstName,
+              userDetails.userInfo.lastName) }}</span>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{{ userDetails.userInfo.firstName }}
+            {{ userDetails.userInfo.lastName }}</h1>
+          <p class="mt-1 text-sm text-slate-500">Member since {{ userDetails.userInfo.createdAt | date:'mediumDate' }}
+          </p>
+        </div>
+      </div>
+      <!-- Action Button Group -->
+      <div class="flex flex-wrap items-center gap-3" *ngIf="loggedInUserId !== userDetails.userInfo.userId">
+        <!-- Show Connect when NONE -->
+        <button *ngIf="!userDetails.connectionStatus || userDetails.connectionStatus === 'NONE'"
+          class="btn btn-outline btn-primary !rounded-none" (click)="openConnectModal()">
+          <mat-icon class="mr-1">handshake</mat-icon> Connect
+        </button>
+
+        <!-- Show Pending when logged in user is sender -->
+        <button *ngIf="userDetails.connectionStatus === 'PENDING' && userDetails.connectionSender"
+          class="btn btn-outline btn-primary !rounded-none" disabled>
+          <mat-icon class="mr-1">hourglass_empty</mat-icon> Pending
+        </button>
+
+        <!-- Show Accept Request when logged in user is receiver -->
+        <button *ngIf="userDetails.connectionStatus === 'PENDING' && !userDetails.connectionSender"
+          class="btn btn-primary !rounded-none" (click)="acceptConnection()">
+          <mat-icon class="mr-1">check</mat-icon> Accept Request
+        </button>
+
+        <!-- Show Message when connected -->
+        <button *ngIf="userDetails.connectionStatus === 'ACCEPTED'" class="btn btn-outline btn-primary !rounded-none"
+          routerLink="/user/inbox">
+          <mat-icon class="mr-1">message</mat-icon> Message
+        </button>
+
+        <button *ngIf="userDetails.connectionStatus === 'ACCEPTED'" class="btn btn-primary !rounded-none"
+          (click)="openSessionModal()">
+          <mat-icon class="mr-1">event</mat-icon> Create Session
+        </button>
+      </div>
+    </div>
+
+    <!-- Tables Container Stack -->
+    <div class="mt-8 space-y-8">
+      <!-- Skills They Can Teach Section -->
+      <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none">
+        <div class="card-body p-0">
+          <div class="p-5 sm:px-6 border-b border-slate-100 flex justify-between items-center">
+            <div>
+              <h2 class="text-base font-semibold text-slate-900">Skills They Can Teach</h2>
+              <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Areas of expertise offered by this user.</p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="table w-full">
+              <thead>
+                <tr class="bg-base-200/50">
+                  <th>Skill Name</th>
+                  <th>Level</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let skill of userDetails.skillsOffered" class="hover">
+                  <td class="font-semibold text-slate-900">{{ skill.name }}</td>
+                  <td>
+                    <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-success">
+                      {{ skill.level }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="flex items-center text-slate-700">
+                      <mat-icon class="text-amber-400 mr-1 text-[18px] w-[18px] h-[18px]">star</mat-icon>
+                      5.0
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="userDetails.skillsOffered.length === 0">
+                  <td colspan="3" class="text-center text-slate-500 py-6">No teaching skills listed.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Learning Goals Section -->
+      <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none">
+        <div class="card-body p-0">
+          <div class="p-5 sm:px-6 border-b border-slate-100">
+            <h2 class="text-base font-semibold text-slate-900">Learning Goals</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Skills this user wants to improve.</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="table w-full">
+              <thead>
+                <tr class="bg-base-200/50">
+                  <th>Skill Name</th>
+                  <th>Target Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let goal of userDetails.learningGoals" class="hover">
+                  <td class="font-semibold text-slate-900">{{ goal.name }}</td>
+                  <td>
+                    <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-info">
+                      {{ goal.level }}
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="userDetails.learningGoals.length === 0">
+                  <td colspan="2" class="text-center text-slate-500 py-6">No learning goals listed.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Connect Modal -->
+<dialog class="modal" [class.modal-open]="isConnectModalOpen">
+  <div class="modal-box !rounded-none">
+    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4">Send Connection Request</h3>
+    <p class="text-sm text-slate-500 mb-4">You can request to learn a skill or offer a skill swap.</p>
+
+    <form class="space-y-4" [formGroup]="connectForm" (ngSubmit)="submitConnect()">
+
+      <!-- Primary Skill -->
+      <div class="form-control">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Skill you want to learn
+            (Optional)</span></label>
+        <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+          formControlName="primarySkillId">
+          <option value="" disabled selected>Select a skill they offer</option>
+          <option *ngFor="let skill of userDetails?.skillsOffered" [value]="skill.id || skill.name">{{ skill.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Offered Skill -->
+      <div class="form-control">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Skill you offer in return
+            (Optional)</span></label>
+        <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+          formControlName="offeredSkillId">
+          <option value="" disabled selected>Select a skill you teach</option>
+          <option *ngFor="let goal of userDetails?.learningGoals" [value]="goal.id || goal.name">{{ goal.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Initial Message -->
+      <div class="form-control">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Initial Message
+            (Optional)</span></label>
+        <textarea class="textarea textarea-bordered h-24 !rounded-none focus:outline-none focus:border-primary"
+          placeholder="Say hi and introduce yourself..." formControlName="initialMessage"></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-action border-t border-slate-100 pt-4 mt-4">
+        <button type="button" class="btn btn-ghost !rounded-none" (click)="closeConnectModal()"
+          [disabled]="isSubmitting">Cancel</button>
+        <button type="submit" class="btn btn-primary !rounded-none" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="loading loading-spinner loading-xs mr-2"></span> Send Proposal
+        </button>
+      </div>
+
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeConnectModal()">close</button>
+  </form>
+</dialog>
+
+<!-- Session Modal -->
+<dialog class="modal" [class.modal-open]="isSessionModalOpen">
+  <div class="modal-box !rounded-none">
+    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4">Create Session</h3>
+    <p class="text-sm text-slate-500 mb-4">Please provide the details for the new session.</p>
+
+    <!-- Loading overlay -->
+    <div *ngIf="isSubmittingSession"
+      class="absolute inset-0 bg-base-100/80 z-50 flex flex-col items-center justify-center">
+      <span class="loading loading-spinner text-primary loading-lg"></span>
+      <span class="mt-2 text-sm text-slate-500 font-medium">Creating session...</span>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="sessionSuccess" class="alert alert-success rounded-md mb-4 flex">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ sessionSuccess }}</span>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="sessionError" class="alert alert-error rounded-md mb-4 flex">
+      <mat-icon>error</mat-icon>
+      <span>{{ sessionError }}</span>
+    </div>
+
+    <form class="space-y-4" [formGroup]="sessionForm" (ngSubmit)="submitSession()" *ngIf="!sessionSuccess">
+
+      <!-- Primary Skill -->
+      <div class="form-control">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Skill you want to
+            learn</span></label>
+        <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+          formControlName="primarySkillId">
+          <option value="" disabled selected>Select a skill</option>
+          <option *ngFor="let skill of userDetails?.skillsOffered" [value]="skill.id">{{ skill.name }}</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Session Type -->
+        <div class="form-control">
+          <label class="label pb-1"><span
+              class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Session
+              Type</span></label>
+          <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+            formControlName="sessionType">
+            <option value="CREDIT">CREDIT</option>
+            <option value="BARTER">BARTER</option>
+          </select>
+        </div>
+
+        <!-- Mode -->
+        <div class="form-control">
+          <label class="label pb-1"><span
+              class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Teaching
+              Mode</span></label>
+          <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+            formControlName="mode">
+            <option value="ONLINE">ONLINE</option>
+            <option value="OFFLINE">OFFLINE</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Offered Skill (BARTER only) -->
+      <div class="form-control" *ngIf="sessionForm.get('sessionType')?.value === 'BARTER'">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Skill you offer in
+            return</span></label>
+
+        <div *ngIf="!hasTeachingSkills" class="alert alert-warning text-sm py-2 px-3 rounded-md mb-2 flex">
+          <mat-icon class="text-[18px]">warning</mat-icon>
+          <span>You must have at least one teaching skill listed in your profile to request a barter session.</span>
+        </div>
+
+        <div *ngIf="hasTeachingSkills && barterableSkills.length === 0"
+          class="alert alert-warning text-sm py-2 px-3 rounded-md mb-2 flex">
+          <mat-icon class="text-[18px]">warning</mat-icon>
+          <span>You do not teach any skills that this mentor wants to learn.</span>
+        </div>
+
+        <select *ngIf="barterableSkills.length > 0"
+          class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+          formControlName="offeredSkillId">
+          <option value="" disabled selected>Select your skill</option>
+          <option *ngFor="let skill of barterableSkills" [value]="skill.id">{{ skill.name }}</option>
+        </select>
+      </div>
+
+      <!-- Credits (CREDIT only) -->
+      <div class="form-control" *ngIf="sessionForm.get('sessionType')?.value === 'CREDIT'">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Credits
+            Required</span></label>
+
+        <div *ngIf="!hasSufficientCredits" class="alert alert-error text-sm py-2 px-3 rounded-md mb-2 flex">
+          <mat-icon class="text-[18px]">error</mat-icon>
+          <span>Insufficient credit balance to request this session. You have {{ loggedInUserDetails?.userInfo?.credit
+            || 0 }} credits.</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="number" class="input input-bordered w-24 !rounded-none" formControlName="creditsHeld" />
+          <span class="text-xs text-slate-500 italic flex items-center">
+            <mat-icon class="text-primary mr-1 text-[16px] w-[16px] h-[16px]">info</mat-icon> Fixed cost set by mentor
+          </span>
+        </div>
+      </div>
+
+      <!-- Meeting Link (ONLINE only) -->
+      <div class="form-control" *ngIf="sessionForm.get('mode')?.value === 'ONLINE'">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Meeting Link</span></label>
+        <input type="url" class="input input-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+          placeholder="e.g. https://meet.google.com/..." formControlName="meetingLink" />
+      </div>
+
+      <!-- Location (OFFLINE only) -->
+      <div class="form-control" *ngIf="sessionForm.get('mode')?.value === 'OFFLINE'">
+        <label class="label pb-1"><span
+            class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Location</span></label>
+        <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+          formControlName="locationId">
+          <option value="" disabled selected>Select a location</option>
+          <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.area }}, {{ loc.city }}</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Date -->
+        <div class="form-control">
+          <label class="label pb-1"><span
+              class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Date</span></label>
+          <input type="date" class="input input-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+            formControlName="sessionDate" />
+        </div>
+
+        <!-- Start Time -->
+        <div class="form-control">
+          <label class="label pb-1"><span
+              class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Start Time</span></label>
+          <input type="time" class="input input-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+            formControlName="startTime" />
+        </div>
+
+        <!-- End Time -->
+        <div class="form-control">
+          <label class="label pb-1">
+            <span class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">End Time</span>
+          </label>
+          <input type="time" class="input input-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+            formControlName="endTime" />
+        </div>
+      </div>
+
+      <!-- Duration Error -->
+      <div *ngIf="sessionForm.hasError('durationTooShort')" class="text-error text-xs mt-1 flex items-center">
+        <mat-icon class="text-[14px] w-[14px] h-[14px] mr-1">warning</mat-icon>
+        This mentor requires a minimum session duration of {{ sessionForm.getError('durationTooShort').required }}
+        minutes for this skill.
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-action border-t border-slate-100 pt-4 mt-4">
+        <button type="button" class="btn btn-ghost !rounded-none" (click)="closeSessionModal()"
+          [disabled]="isSubmittingSession">Cancel</button>
+        <button type="submit" class="btn btn-primary !rounded-none"
+          [disabled]="isSubmittingSession || (!hasSufficientCredits && sessionForm.get('sessionType')?.value === 'CREDIT') || (!hasTeachingSkills && sessionForm.get('sessionType')?.value === 'BARTER')">
+          Create
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Success Actions -->
+    <div class="modal-action border-t border-slate-100 pt-4 mt-4" *ngIf="sessionSuccess">
+      <button type="button" class="btn btn-outline btn-primary !rounded-none"
+        (click)="closeSessionModal()">Close</button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeSessionModal()">close</button>
+  </form>
+</dialog>

@@ -1,0 +1,79 @@
+<div class="p-8 max-w-7xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Platform Conflicts & Disputes</h1>
+    <button class="btn btn-primary" (click)="fetchConflicts()">
+      <mat-icon>refresh</mat-icon> Refresh
+    </button>
+  </div>
+  
+  <div *ngIf="isLoading" class="flex justify-center my-12">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error mb-6">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <div *ngIf="!isLoading && !error && conflicts.length === 0" class="text-center text-slate-500 py-16 bg-white rounded-box shadow-sm border border-slate-100">
+    <mat-icon class="text-6xl mb-4 text-slate-300">verified</mat-icon>
+    <p class="text-xl font-medium">No active conflicts.</p>
+    <p class="text-sm mt-2">The platform is running smoothly.</p>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-box shadow-sm border border-slate-100" *ngIf="!isLoading && conflicts.length > 0">
+    <table class="table w-full">
+      <thead>
+        <tr class="bg-slate-50 text-slate-600">
+          <th>ID</th>
+          <th>Session</th>
+          <th>Learner</th>
+          <th>Mentor</th>
+          <th>Reason</th>
+          <th>Credits Escrowed</th>
+          <th>Status</th>
+          <th>Date Filed</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let conflict of conflicts" class="hover:bg-slate-50">
+          <td class="font-medium">#{{ conflict.conflictId }}</td>
+          <td>
+            <span class="font-medium">#{{ conflict.sessionId }}</span>
+            <span class="block text-xs text-slate-500">{{ conflict.primarySkillName }}</span>
+          </td>
+          <td>{{ conflict.learnerName }}</td>
+          <td>{{ conflict.mentorName }}</td>
+          <td>
+            <span class="text-sm font-semibold text-slate-700">{{ conflict.reason }}</span>
+            <span class="text-xs text-slate-500 block mt-1">Raised by: {{ conflict.raisedByName }}</span>
+          </td>
+          <td>
+            <div class="badge badge-lg" [ngClass]="{'badge-primary badge-outline': conflict.creditsHeld > 0, 'badge-ghost': conflict.creditsHeld === 0}">
+              {{ conflict.creditsHeld }} credits
+            </div>
+          </td>
+          <td>
+            <div class="badge" [ngClass]="{
+              'badge-warning': conflict.status === 'OPEN',
+              'badge-info': conflict.status === 'UNDER_REVIEW',
+              'badge-success': conflict.status === 'RESOLVED_REFUNDED' || conflict.status === 'RESOLVED_PAID_MENTOR',
+              'badge-ghost': conflict.status === 'DISMISSED'
+            }">
+              {{ conflict.status }}
+            </div>
+          </td>
+          <td class="text-sm text-slate-500">{{ conflict.createdAt | date:'short' }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline btn-primary" (click)="viewDetails(conflict.conflictId)">
+              Resolve
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+

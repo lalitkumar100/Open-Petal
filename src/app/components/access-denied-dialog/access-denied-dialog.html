@@ -1,0 +1,24 @@
+<div *ngIf="errorDialog.showAccessDenied$ | async" class="fixed inset-0 z-[9999] flex items-center justify-center">
+  <div class="absolute inset-0 bg-base-300/60 backdrop-blur-md"></div>
+  <div class="bg-base-100 shadow-2xl relative w-full max-w-sm mx-4 rounded-xl overflow-hidden border border-base-200 z-10">
+    <button (click)="onClose()" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    
+    <div class="flex flex-col items-center text-center gap-3 py-6 px-4">
+      <div class="text-error bg-error/10 p-5 rounded-full flex items-center justify-center animate-bounce mb-2">
+        <mat-icon class="!w-14 !h-14 !text-[56px] leading-none">gpp_bad</mat-icon>
+      </div>
+      
+      <h3 class="text-2xl font-bold text-base-content mt-2">Access Denied</h3>
+      <div class="badge badge-error badge-outline font-mono mb-1">Error 403</div>
+      
+      <p class="text-base-content/70 mt-2 text-sm leading-relaxed">
+        You don't have the necessary permissions to access this resource. If you believe this is a mistake, please contact your administrator.
+      </p>
+      
+      <div class="modal-action w-full flex flex-col sm:flex-row justify-center gap-3 mt-6">
+        <button class="btn btn-outline flex-1 rounded-lg" (click)="onClose()">Dismiss</button>
+        <button class="btn btn-error text-white flex-1 rounded-lg" (click)="onLogout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</div>

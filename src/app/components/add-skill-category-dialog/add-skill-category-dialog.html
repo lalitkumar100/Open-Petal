@@ -1,0 +1,33 @@
+<div class="modal" [class.modal-open]="isVisible">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Add Skill Category</h3>
+    
+    <div class="alert alert-success mb-4" *ngIf="successMessage">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <div class="alert alert-error mb-4" *ngIf="errorMessage">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <label class="label"><span class="label-text">Category Name *</span></label>
+      <input type="text" placeholder="e.g. Programming" class="input input-bordered w-full" [(ngModel)]="name" [disabled]="isLoading" />
+    </div>
+
+    <div class="form-control w-full mb-6">
+      <label class="label"><span class="label-text">Description</span></label>
+      <textarea class="textarea textarea-bordered h-24" placeholder="Brief description..." [(ngModel)]="description" [disabled]="isLoading"></textarea>
+    </div>
+
+    <div class="modal-action">
+      <button class="btn" (click)="close()" [disabled]="isLoading">Cancel</button>
+      <button class="btn btn-primary" (click)="submit()" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="loading loading-spinner"></span>
+        Submit
+      </button>
+    </div>
+  </div>
+</div>

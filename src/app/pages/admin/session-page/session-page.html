@@ -1,0 +1,229 @@
+<div class="p-8">
+  <h1 class="text-3xl font-bold mb-6">Platform Sessions</h1>
+  
+  <div *ngIf="isLoading" class="flex justify-center my-8">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+
+  <div *ngIf="!isLoading && sessions.length === 0" class="text-center text-slate-500 py-10">
+    <p>There are no sessions in the platform yet.</p>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-box shadow" *ngIf="!isLoading && sessions.length > 0">
+    <table class="table w-full">
+      <thead>
+        <tr class="bg-slate-50 text-slate-600">
+          <th>ID</th>
+          <th>Learner</th>
+          <th>Mentor</th>
+          <th>Skill</th>
+          <th>Type</th>
+          <th>Date & Time</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of sessions" class="hover:bg-slate-50">
+          <td class="font-medium text-slate-500">#{{ session.id }}</td>
+          <td>
+            <div class="font-medium">{{ session.learnerName }}</div>
+            <div class="text-xs text-slate-500">{{ session.learnerEmail }}</div>
+          </td>
+          <td>
+            <div class="font-medium">{{ session.mentorName }}</div>
+            <div class="text-xs text-slate-500">{{ session.mentorEmail }}</div>
+          </td>
+          <td>{{ session.primarySkillName }}</td>
+          <td>
+            <div class="badge badge-outline" [ngClass]="{'badge-info': session.sessionType === 'CREDIT', 'badge-accent': session.sessionType === 'BARTER'}">
+              {{ session.sessionType }}
+            </div>
+            <div *ngIf="session.sessionType === 'CREDIT'" class="text-xs text-slate-500 mt-1">
+              {{ session.creditsHeld }} credits
+            </div>
+          </td>
+          <td>
+            <div class="text-sm">{{ session.sessionDate }}</div>
+            <div class="text-xs text-slate-500">{{ session.startTime }} - {{ session.endTime }}</div>
+          </td>
+          <td>
+            <div class="badge" [ngClass]="{
+              'badge-warning': session.status === 'REQUESTED',
+              'badge-info': session.status === 'SCHEDULED',
+              'badge-success': session.status === 'STARTED' || session.status === 'ENDED' || session.status === 'COMPLETED',
+              'badge-error': session.status === 'CANCELLED' || session.status === 'CONFLICT'
+            }">
+              {{ session.status }}
+            </div>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline" (click)="viewDetails(session.id)">Inspect</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<dialog class="modal" [class.modal-open]="isModalOpen">
+  <div class="modal-box w-11/12 max-w-3xl rounded-none relative">
+    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" (click)="closeModal()" [disabled]="isCancelling">✕</button>
+    <h3 class="font-bold text-lg mb-4">Session Telemetry (Admin)</h3>
+
+    <div *ngIf="isDetailsLoading" class="flex justify-center py-8">
+      <span class="loading loading-spinner loading-md text-primary"></span>
+    </div>
+
+    <div *ngIf="!isDetailsLoading && selectedSession">
+      
+      <!-- Feedback Alerts -->
+      <div *ngIf="cancelError" class="alert alert-error text-sm py-2 px-3 rounded-md mb-4 flex">
+        <mat-icon class="text-[18px]">error</mat-icon>
+        <span>{{ cancelError }}</span>
+      </div>
+      <div *ngIf="cancelSuccess" class="alert alert-success text-sm py-2 px-3 rounded-md mb-4 flex">
+        <mat-icon class="text-[18px]">check_circle</mat-icon>
+        <span>{{ cancelSuccess }}</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-6 mb-6 bg-slate-50 p-4 rounded border border-slate-100">
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Learner</span>
+          <p class="font-medium">{{ selectedSession.learnerName }}</p>
+          <p class="text-xs text-slate-500">{{ selectedSession.learnerEmail }}</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Mentor</span>
+          <p class="font-medium">{{ selectedSession.mentorName }}</p>
+          <p class="text-xs text-slate-500">{{ selectedSession.mentorEmail }}</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Status</span>
+          <div>
+            <div class="badge mt-1" [ngClass]="{
+              'badge-warning': selectedSession.status === 'REQUESTED',
+              'badge-info': selectedSession.status === 'SCHEDULED',
+              'badge-success': selectedSession.status === 'STARTED' || selectedSession.status === 'ENDED' || selectedSession.status === 'COMPLETED',
+              'badge-error': selectedSession.status === 'CANCELLED' || selectedSession.status === 'CONFLICT'
+            }">
+              {{ selectedSession.status }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Primary Skill</span>
+          <p class="font-medium">{{ selectedSession.primarySkillName }}</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Session Type</span>
+          <p class="font-medium">{{ selectedSession.sessionType }}</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Date & Time</span>
+          <p class="font-medium">{{ selectedSession.sessionDate }}</p>
+          <p class="text-sm text-slate-600">{{ selectedSession.startTime }} - {{ selectedSession.endTime }}</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Created At</span>
+          <p class="font-medium">{{ selectedSession.createdAt | date:'medium' }}</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-semibold uppercase">Mode</span>
+          <p class="font-medium">{{ selectedSession.mode }}</p>
+        </div>
+        
+        <!-- Conditional fields -->
+        <div *ngIf="selectedSession.sessionType === 'CREDIT'">
+          <span class="text-xs text-slate-500 font-semibold uppercase flex items-center gap-1">
+            Credits Escrowed 
+            <mat-icon *ngIf="selectedSession.status !== 'CANCELLED' && selectedSession.status !== 'COMPLETED'" class="text-[14px] text-info" title="Will be refunded on cancellation">info</mat-icon>
+          </span>
+          <p class="font-medium">{{ selectedSession.creditsHeld }}</p>
+        </div>
+        <div *ngIf="selectedSession.sessionType === 'BARTER'">
+          <span class="text-xs text-slate-500 font-semibold uppercase">Offered Skill (Return)</span>
+          <p class="font-medium">{{ selectedSession.offeredSkillName || 'N/A' }}</p>
+        </div>
+
+        <div *ngIf="selectedSession.mode === 'ONLINE'" class="col-span-2">
+          <span class="text-xs text-slate-500 font-semibold uppercase">Meeting Link</span>
+          <p class="font-medium break-all">
+            <a *ngIf="selectedSession.meetingLink" [href]="selectedSession.meetingLink" target="_blank" class="text-primary hover:underline">{{ selectedSession.meetingLink }}</a>
+            <span *ngIf="!selectedSession.meetingLink" class="text-slate-400">Not provided yet</span>
+          </p>
+        </div>
+        <div *ngIf="selectedSession.mode === 'OFFLINE'" class="col-span-2">
+          <span class="text-xs text-slate-500 font-semibold uppercase">Location</span>
+          <p class="font-medium">{{ selectedSession.locationName || 'Not provided yet' }}</p>
+        </div>
+      </div>
+
+      <!-- Secure Passwords Section -->
+      <div class="border border-error rounded-md p-4 mb-4 bg-error bg-opacity-5">
+        <h4 class="text-sm font-bold text-error mb-2 flex items-center gap-2">
+          <mat-icon class="text-[18px]">security</mat-icon> Audit Secrets (Handshake Passwords)
+        </h4>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase">Learner Start</span>
+            <p class="font-mono text-sm tracking-wider">{{ selectedSession.learnerStartPassword || '---' }}</p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase">Mentor Start</span>
+            <p class="font-mono text-sm tracking-wider">{{ selectedSession.mentorStartPassword || '---' }}</p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase">Learner End</span>
+            <p class="font-mono text-sm tracking-wider">{{ selectedSession.learnerEndPassword || '---' }}</p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase">Mentor End</span>
+            <p class="font-mono text-sm tracking-wider">{{ selectedSession.mentorEndPassword || '---' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-action border-t border-slate-100 pt-4 mt-4 flex flex-col items-end gap-3">
+        
+        <div *ngIf="showCancelConfirm" class="w-full bg-slate-50 p-4 rounded border border-slate-200">
+          <p class="text-sm font-semibold text-error mb-2">Are you sure you want to force-cancel this session?</p>
+          <p class="text-xs text-slate-600 mb-4" *ngIf="selectedSession.sessionType === 'CREDIT'">Any held credits ({{ selectedSession.creditsHeld }}) will be automatically refunded to the learner.</p>
+          
+          <div class="form-control mb-4">
+            <label class="label"><span class="label-text">Cancellation Reason (Optional)</span></label>
+            <input type="text" class="input input-bordered input-sm w-full" [(ngModel)]="cancelReason" placeholder="Cancelled by Administrator" [disabled]="isCancelling" />
+          </div>
+          
+          <div class="flex justify-end gap-2">
+            <button class="btn btn-ghost btn-sm" (click)="cancelInitiation()" [disabled]="isCancelling">Back</button>
+            <button class="btn btn-error btn-sm" (click)="confirmCancel()" [disabled]="isCancelling">
+              <span *ngIf="isCancelling" class="loading loading-spinner loading-xs"></span>
+              Confirm Cancel & Refund
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 w-full" *ngIf="!showCancelConfirm">
+          <button 
+            *ngIf="selectedSession.status !== 'CANCELLED' && selectedSession.status !== 'COMPLETED'"
+            class="btn btn-error btn-outline btn-sm" 
+            (click)="initiateCancel()">
+            Force Cancel Session
+          </button>
+          <button class="btn btn-ghost btn-sm" (click)="closeModal()">Close</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeModal()" [disabled]="isCancelling">close</button>
+  </form>
+</dialog>

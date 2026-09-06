@@ -1,0 +1,60 @@
+<div class="p-8 relative min-h-screen">
+  <h1 class="text-3xl font-bold mb-6">My Learning Sessions</h1>
+  
+  <app-loader [isLoading]="isLoading" mode="flow" size="w-40 h-40"></app-loader>
+
+  <div *ngIf="!isLoading && sessions.length === 0" class="text-center text-slate-500 py-10">
+    <p>You don't have any active or past sessions yet.</p>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-box shadow" *ngIf="!isLoading && sessions.length > 0">
+    <table class="table w-full">
+      <thead>
+        <tr class="bg-slate-50 text-slate-600">
+          <th>Role</th>
+          <th>Partner</th>
+          <th>Skill</th>
+          <th>Type</th>
+          <th>Date & Time</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of sessions" class="hover:bg-slate-50">
+          <td>
+            <div class="badge" [ngClass]="{'badge-primary': session.role === 'LEARNER', 'badge-secondary': session.role === 'MENTOR'}">
+              {{ session.role === 'LEARNER' ? 'Learning' : 'Teaching' }}
+            </div>
+          </td>
+          <td class="font-medium">{{ session.partnerName }}</td>
+          <td>{{ session.primarySkillName }}</td>
+          <td>
+            <div class="badge badge-outline" [ngClass]="{'badge-info': session.sessionType === 'CREDIT', 'badge-accent': session.sessionType === 'BARTER'}">
+              {{ session.sessionType }}
+            </div>
+          </td>
+          <td>
+            <div class="text-sm">{{ session.sessionDate }}</div>
+            <div class="text-xs text-slate-500">{{ session.startTime }} - {{ session.endTime }}</div>
+          </td>
+          <td>
+            <div class="badge" [ngClass]="{
+              'badge-warning': session.status === 'REQUESTED',
+              'badge-info': session.status === 'SCHEDULED',
+              'badge-success': session.status === 'STARTED' || session.status === 'ENDED' || session.status === 'COMPLETED',
+              'badge-error': session.status === 'CANCELLED' || session.status === 'CONFLICT'
+            }">
+              {{ session.status }}
+            </div>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline" (click)="viewDetails(session.id)">View Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+

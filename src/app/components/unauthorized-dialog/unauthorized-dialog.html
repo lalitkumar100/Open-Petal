@@ -1,0 +1,19 @@
+<div *ngIf="isVisible$ | async" class="fixed inset-0 z-[9999] flex items-center justify-center">
+  <div class="absolute inset-0 bg-base-300/60 backdrop-blur-md"></div>
+  <div class="bg-base-100 shadow-2xl relative w-full max-w-sm mx-4 rounded-xl overflow-hidden border border-base-200 p-6 z-10">
+    <div class="flex flex-col items-center text-center">
+      <div class="text-error mb-4">
+        <mat-icon style="font-size: 4rem; width: 4rem; height: 4rem;">no_accounts</mat-icon>
+      </div>
+      <h3 class="font-bold text-2xl">Session Expired</h3>
+      <p class="py-4 text-base-content/80">
+        Your session has expired or you are not logged in. Please log in again to continue.
+      </p>
+      <div class="modal-action w-full mt-2">
+        <button class="btn btn-primary w-full" (click)="goToLogin()">
+          <mat-icon>login</mat-icon> Go to Login
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

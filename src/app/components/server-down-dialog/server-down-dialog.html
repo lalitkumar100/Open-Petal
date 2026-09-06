@@ -1,0 +1,24 @@
+<div *ngIf="errorDialog.showServerDown$ | async" class="fixed inset-0 z-[9999] flex items-center justify-center">
+  <div class="absolute inset-0 bg-base-300/60 backdrop-blur-md"></div>
+  <div class="bg-base-100 shadow-2xl relative w-full max-w-sm mx-4 rounded-xl overflow-hidden border border-base-200 z-10">
+    <button (click)="onClose()" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    
+    <div class="flex flex-col items-center text-center gap-3 py-6 px-4">
+      <div class="text-warning bg-warning/10 p-5 rounded-full flex items-center justify-center animate-pulse mb-2">
+        <mat-icon class="!w-14 !h-14 !text-[56px] leading-none">cloud_off</mat-icon>
+      </div>
+      
+      <h3 class="text-2xl font-bold text-base-content mt-2">Server Unavailable</h3>
+      <div class="badge badge-warning badge-outline font-mono mb-1">Connection Error</div>
+      
+      <p class="text-base-content/70 mt-2 text-sm leading-relaxed">
+        We're having trouble connecting to the server. It might be down for maintenance or experiencing high load. Please check your internet connection or try again later.
+      </p>
+      
+      <div class="modal-action w-full flex flex-col sm:flex-row justify-center gap-3 mt-6">
+        <button class="btn btn-outline flex-1 rounded-lg" (click)="onClose()">Dismiss</button>
+        <button class="btn btn-warning text-white flex-1 rounded-lg" (click)="onRetry()">Retry</button>
+      </div>
+    </div>
+  </div>
+</div>

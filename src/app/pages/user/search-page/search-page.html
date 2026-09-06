@@ -1,0 +1,99 @@
+<div class="p-8 min-h-screen bg-base-200 relative">
+  <!-- Search Section -->
+  <div class="flex flex-col items-center justify-center mb-12">
+    <h1 class="text-4xl font-bold mb-6 text-primary">Discover Talents & Skills</h1>
+    
+    <div class="join shadow-xl w-full max-w-2xl">
+      <select [(ngModel)]="searchType" class="select select-bordered join-item w-1/4">
+        <option value="user">User</option>
+        <option value="skill">Skill</option>
+      </select>
+      
+      <input 
+        type="text" 
+        [(ngModel)]="query" 
+        (keyup.enter)="onSearch()"
+        placeholder="Search..." 
+        class="input input-bordered join-item w-2/4" 
+      />
+      
+      <button (click)="onSearch()" class="btn btn-primary join-item w-1/4" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="loading loading-spinner loading-xs"></span>
+        <svg *ngIf="!isLoading" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <app-loader [isLoading]="isLoading" mode="flow" size="w-32 h-32"></app-loader>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-error max-w-2xl mx-auto mb-8 shadow-lg">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && usersList.length === 0" class="text-center my-12">
+    <p class="text-xl text-base-content/60">No users found matching your search query.</p>
+  </div>
+
+  <!-- Cards Section -->
+  <div *ngIf="!isLoading && usersList.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div *ngFor="let user of usersList" 
+         class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative"
+         [ngClass]="{'bg-sky-50 border-2 border-sky-300': user.userId === loggedInUserId}">
+      
+      <!-- 'You' Badge -->
+      <div *ngIf="user.userId === loggedInUserId" class="absolute top-2 right-2 badge badge-info badge-sm font-semibold">
+        You
+      </div>
+      <div class="card-body items-center text-center p-6">
+        
+        <!-- Avatar -->
+        <div class="avatar placeholder mb-4">
+          <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 flex items-center justify-center text-white" 
+               [ngStyle]="{'background-color': getAvatarColor(user.firstName, user.lastName)}">
+            <span class="text-3xl font-bold">{{ getInitials(user.firstName, user.lastName) }}</span>
+          </div>
+        </div>
+        
+        <!-- Name -->
+        <h2 class="card-title text-xl font-bold mb-2">{{ user.firstName }} {{ user.lastName }}</h2>
+        
+        <!-- Skills -->
+        <div class="w-full flex flex-col gap-2 mb-4">
+          <!-- Learning Skills (Blue) -->
+          <div class="flex flex-wrap justify-center gap-2" *ngIf="user.learningSkills.length > 0">
+            <span *ngFor="let skill of user.learningSkills" class="badge badge-info gap-1 font-medium badge-sm sm:badge-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg> 
+                {{ skill.name }}
+            </span>
+          </div>
+
+          <!-- Tech/Offered Skills (Red) -->
+          <div class="flex flex-wrap justify-center gap-2" *ngIf="user.techSkills.length > 0">
+            <span *ngFor="let skill of user.techSkills" class="badge badge-error gap-1 font-medium badge-sm sm:badge-md text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg> 
+                {{ skill.name }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Description -->
+        <p class="text-sm text-base-content/70 mb-4 line-clamp-2">
+          {{ user.description }}
+        </p>
+        
+        <!-- Action Button -->
+        <div class="card-actions w-full mt-auto">
+          <button class="btn btn-primary btn-outline w-full rounded-full hover:shadow-lg" [routerLink]="['/user/user-details', user.userId]">Details</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>

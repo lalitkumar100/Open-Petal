@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -11,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
 export class RegisterForm {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   firstName = '';
   lastName = '';
@@ -23,6 +26,17 @@ export class RegisterForm {
   errorMessage = '';
   isLoading = false;
   successMessage = '';
+  
+  showPassword = false;
+  showConfirmPassword = false;
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
   onSubmit() {
     this.errorMessage = '';
@@ -48,7 +62,8 @@ export class RegisterForm {
       dob: this.dob
     };
 
-    this.authService.register(payload).subscribe({
+    const url = `${environment.apiUrl}/${environment.apiVersion}/auth/register`;
+    this.http.post<any>(url, payload).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res.success) {
@@ -72,7 +87,11 @@ export class RegisterForm {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'An error occurred during registration.';
+        if (err.status === 0) {
+          this.errorMessage = 'Server is unreachable. Please try again later.';
+        } else {
+          this.errorMessage = err.error?.message || 'An error occurred during registration.';
+        }
       }
     });
   }

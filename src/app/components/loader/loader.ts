@@ -8,8 +8,9 @@ import { Component, Input } from '@angular/core';
 })
 export class LoaderComponent {
   @Input() isLoading: boolean = false;
-  @Input() mode: 'inline' | 'page' | 'global' = 'inline'; 
+  @Input() mode: 'inline' | 'page' | 'global' | 'flow' = 'inline'; 
   @Input() message: string = '';
+  @Input() size: string = '';
 
   // Tracks whether the custom GIF has finished loading from assets/public
   isGifLoaded: boolean = false;

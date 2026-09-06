@@ -10,7 +10,7 @@
 
     <!-- Sidebar content here -->
     <ul class="menu w-full grow mt-2">
-        <!-- List item -->
+        <!-- Common Homepage -->
         <li>
             <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right !rounded-none hover:text-primary" data-tip="Homepage" [routerLink]="basePath + '/home'">
                 <!-- lucide: home -->
@@ -19,12 +19,14 @@
             </button>
         </li>
 
-        <!-- List item -->
-        <li>
-            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right !rounded-none hover:text-primary" data-tip="Settings">
-                <!-- lucide: settings -->
-                <mat-icon class="my-1.5 inline-block size-5">settings</mat-icon>
-                <span class="is-drawer-close:hidden font-semibold">Settings</span>
+        <!-- Dynamic Menu Options -->
+        <li *ngFor="let item of currentMenuItems">
+            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right !rounded-none hover:text-primary relative" [attr.data-tip]="item.label" [routerLink]="item.path">
+                <mat-icon class="my-1.5 inline-block size-5">{{ item.icon }}</mat-icon>
+                <span class="is-drawer-close:hidden font-semibold flex-1 text-left">{{ item.label }}</span>
+                <span class="badge badge-primary badge-sm ml-auto" *ngIf="item.label === 'Inbox' && unreadCount > 0">{{ unreadCount }}</span>
+                
+                <span class="is-drawer-open:hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" *ngIf="item.label === 'Inbox' && unreadCount > 0"></span>
             </button>
         </li>
     </ul>

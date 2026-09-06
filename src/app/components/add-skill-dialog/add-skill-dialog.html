@@ -1,0 +1,52 @@
+<dialog #dialog class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" (click)="close()">✕</button>
+    </form>
+    <h3 class="font-bold text-lg text-base-content mb-4">Add New Skill</h3>
+    
+    <div *ngIf="errorMessage" class="alert alert-error text-sm mb-4">
+      <mat-icon class="mr-2">error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form [formGroup]="skillForm" (ngSubmit)="onSubmit()">
+      <div class="form-control w-full mb-4">
+        <label class="label">
+          <span class="label-text">Skill Name <span class="text-error">*</span></span>
+        </label>
+        <input type="text" formControlName="name" placeholder="Enter skill name" 
+               class="input input-bordered w-full" 
+               [class.input-error]="skillForm.get('name')?.invalid && skillForm.get('name')?.touched" />
+        <label class="label" *ngIf="skillForm.get('name')?.invalid && skillForm.get('name')?.touched">
+          <span class="label-text-alt text-error" *ngIf="skillForm.get('name')?.errors?.['required']">Skill name is required.</span>
+          <span class="label-text-alt text-error" *ngIf="skillForm.get('name')?.errors?.['minlength']">Skill name must be at least 2 characters.</span>
+          <span class="label-text-alt text-error" *ngIf="skillForm.get('name')?.errors?.['maxlength']">Skill name cannot exceed 100 characters.</span>
+        </label>
+      </div>
+
+      <div class="form-control w-full mb-6">
+        <label class="label">
+          <span class="label-text">Description</span>
+        </label>
+        <textarea formControlName="description" placeholder="Optional description..." 
+                  class="textarea textarea-bordered h-24 w-full"
+                  [class.textarea-error]="skillForm.get('description')?.invalid && skillForm.get('description')?.touched"></textarea>
+        <label class="label" *ngIf="skillForm.get('description')?.invalid && skillForm.get('description')?.touched">
+          <span class="label-text-alt text-error" *ngIf="skillForm.get('description')?.errors?.['maxlength']">Description cannot exceed 500 characters.</span>
+        </label>
+      </div>
+
+      <div class="modal-action">
+        <button type="button" class="btn" (click)="close()" [disabled]="isSubmitting">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="skillForm.invalid || isSubmitting">
+          <span *ngIf="isSubmitting" class="loading loading-spinner loading-sm"></span>
+          Save Skill
+        </button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="close()">close</button>
+  </form>
+</dialog>

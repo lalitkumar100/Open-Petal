@@ -1,0 +1,191 @@
+<div class="p-6 h-full flex flex-col gap-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center bg-base-100 p-4 rounded-lg shadow-sm border border-base-200">
+    <h2 class="text-2xl font-bold">Location Management</h2>
+    <button class="btn btn-primary btn-sm" (click)="openAddModal()">
+      + Add Location
+    </button>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 bg-base-100 rounded-lg shadow-sm border border-base-200 p-4 flex flex-col overflow-hidden">
+    <!-- Table Container -->
+    <div class="flex-1 overflow-x-auto">
+      <table class="table w-full table-zebra table-pin-rows">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Address Line 1</th>
+            <th>Area</th>
+            <th>City</th>
+            <th>Pincode</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let loc of paginatedLocations">
+            <td>{{ loc.id }}</td>
+            <td>{{ loc.addressLine1 }}</td>
+            <td>{{ loc.area }}</td>
+            <td>{{ loc.city }}</td>
+            <td>{{ loc.pincode }}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-ghost text-primary" (click)="openDetailsModal(loc)">
+                View Details
+              </button>
+            </td>
+          </tr>
+          
+          <tr *ngIf="locations.length === 0">
+            <td colspan="6" class="text-center py-4 text-base-content/70">
+              No locations found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="flex justify-between items-center mt-4 border-t border-base-200 pt-4" *ngIf="locations.length > 0">
+      <span class="text-sm text-base-content/70">
+        Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ min(currentPage * pageSize, locations.length) }} of {{ locations.length }} entries
+      </span>
+      <div class="join">
+        <button class="join-item btn btn-sm" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">« Prev</button>
+        <button class="join-item btn btn-sm no-animation">Page {{ currentPage }} of {{ totalPages }}</button>
+        <button class="join-item btn btn-sm" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">Next »</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<dialog class="modal" [class.modal-open]="isDetailsModalOpen">
+  <div class="modal-box p-0 overflow-hidden bg-base-100 max-w-lg">
+    <!-- Header -->
+    <div class="bg-primary/10 px-6 py-4 flex items-center justify-between border-b border-primary/20">
+      <div class="flex items-center gap-2">
+        <mat-icon class="text-primary size-6">place</mat-icon>
+        <h3 class="font-bold text-lg text-primary">Location Details</h3>
+      </div>
+      <button class="btn btn-sm btn-circle btn-ghost" (click)="closeDetailsModal()">✕</button>
+    </div>
+    
+    <!-- Body -->
+    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4" *ngIf="selectedLocation">
+      
+      <div class="flex flex-col gap-1">
+        <span class="text-xs uppercase font-semibold text-base-content/60 tracking-wider">Location ID</span>
+        <span class="font-medium text-base bg-base-200 px-3 py-1.5 rounded-md inline-block w-fit">#{{ selectedLocation.id }}</span>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs uppercase font-semibold text-base-content/60 tracking-wider">Pincode</span>
+        <span class="font-medium text-base">{{ selectedLocation.pincode }}</span>
+      </div>
+
+      <div class="flex flex-col gap-1 md:col-span-2">
+        <span class="text-xs uppercase font-semibold text-base-content/60 tracking-wider">Address Line 1</span>
+        <div class="bg-base-100 border border-base-200 p-3 rounded-lg shadow-sm">
+          <span class="font-medium text-base">{{ selectedLocation.addressLine1 }}</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1 md:col-span-2" *ngIf="selectedLocation.addressLine2">
+        <span class="text-xs uppercase font-semibold text-base-content/60 tracking-wider">Address Line 2</span>
+        <div class="bg-base-100 border border-base-200 p-3 rounded-lg shadow-sm">
+          <span class="font-medium text-base">{{ selectedLocation.addressLine2 }}</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs uppercase font-semibold text-base-content/60 tracking-wider">Area</span>
+        <span class="font-medium text-base">{{ selectedLocation.area }}</span>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs uppercase font-semibold text-base-content/60 tracking-wider">City</span>
+        <span class="font-medium text-base">{{ selectedLocation.city }}</span>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="bg-base-200/50 px-6 py-4 flex justify-end">
+      <button class="btn btn-outline" (click)="closeDetailsModal()">Close</button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeDetailsModal()">close</button>
+  </form>
+</dialog>
+
+<!-- Add Location Modal -->
+<dialog class="modal" [class.modal-open]="isAddModalOpen">
+  <div class="modal-box w-11/12 max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Add New Location</h3>
+    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" [disabled]="isSubmitting" (click)="closeAddModal()">✕</button>
+    
+    <!-- Status Messages -->
+    <div *ngIf="error" class="alert alert-error shadow-lg mb-4 py-2">
+      <span>{{ error }}</span>
+    </div>
+    <div *ngIf="success" class="alert alert-success shadow-lg mb-4 py-2">
+      <span>{{ success }}</span>
+    </div>
+
+    <form [formGroup]="locationForm" (ngSubmit)="onSubmitLocation()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <div class="form-control md:col-span-2">
+          <label class="label"><span class="label-text">Address Line 1 *</span></label>
+          <input type="text" formControlName="addressLine1" class="input input-bordered w-full" placeholder="Enter Address Line 1" />
+          <label class="label pb-0" *ngIf="locationForm.get('addressLine1')?.touched && locationForm.get('addressLine1')?.invalid">
+            <span class="label-text-alt text-error">Address Line 1 is required</span>
+          </label>
+        </div>
+
+        <div class="form-control md:col-span-2">
+          <label class="label"><span class="label-text">Address Line 2 (Optional)</span></label>
+          <input type="text" formControlName="addressLine2" class="input input-bordered w-full" placeholder="Enter Address Line 2" />
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Area *</span></label>
+          <input type="text" formControlName="area" class="input input-bordered w-full" placeholder="Enter Area" />
+          <label class="label pb-0" *ngIf="locationForm.get('area')?.touched && locationForm.get('area')?.invalid">
+            <span class="label-text-alt text-error">Area is required</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">City *</span></label>
+          <input type="text" formControlName="city" class="input input-bordered w-full" placeholder="Enter City" />
+          <label class="label pb-0" *ngIf="locationForm.get('city')?.touched && locationForm.get('city')?.invalid">
+            <span class="label-text-alt text-error">City is required</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Pincode *</span></label>
+          <input type="text" formControlName="pincode" class="input input-bordered w-full" placeholder="Enter Pincode" />
+          <label class="label pb-0" *ngIf="locationForm.get('pincode')?.touched && locationForm.get('pincode')?.invalid">
+            <span class="label-text-alt text-error">Pincode is required</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="modal-action mt-6">
+        <button type="button" class="btn" [disabled]="isSubmitting" (click)="closeAddModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="loading loading-spinner loading-sm"></span>
+          {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeAddModal()" [disabled]="isSubmitting">close</button>
+  </form>
+</dialog>

@@ -1,0 +1,74 @@
+<div class="p-4 md:p-8 flex flex-col min-h-full">
+  <div class="mb-6 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-base-content">User Page</h1>
+  </div>
+
+  <div class="bg-base-100 rounded-box shadow-md p-6 flex-1">
+    <!-- Controls -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <select class="select select-bordered w-full max-w-xs" [(ngModel)]="searchType">
+        <option value="userId">User ID</option>
+        <option value="name">Full Name</option>
+        <option value="email">Email</option>
+        <option value="phone">Phone</option>
+      </select>
+      <input type="text" placeholder="Enter search term..." class="input input-bordered flex-1 min-w-[200px]" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" />
+      
+      <!-- Sort Select -->
+      <select class="select select-bordered w-full max-w-xs" [(ngModel)]="sortOption" (change)="onSortChange()">
+        <option value="a-z">A-Z (Name)</option>
+        <option value="z-a">Z-A (Name)</option>
+        <option value="new-old">Newest First</option>
+        <option value="old-new">Oldest First</option>
+      </select>
+
+      <button class="btn btn-primary" (click)="onSearch()">Search</button>
+      <button class="btn btn-neutral" (click)="onReset()">Reset</button>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto border border-base-300 rounded-lg">
+      <table class="table w-full">
+        <thead class="bg-base-200">
+          <tr>
+            <th>User ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Gender</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users" class="hover">
+            <td>{{ user.userId }}</td>
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone || 'N/A' }}</td>
+            <td>{{ user.gender || 'N/A' }}</td>
+            <td>
+              <button class="btn btn-sm btn-info text-white" [routerLink]="['/user/user-details', user.userId]">Details</button>
+            </td>
+          </tr>
+          <tr *ngIf="users.length === 0">
+            <td colspan="6" class="text-center text-base-content/60 py-8">
+              No users found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-wrap justify-between items-center mt-6">
+      <div class="text-sm text-base-content/70">
+        Showing {{ startIndex }} to {{ endIndex }} of {{ totalRecords }} entries
+      </div>
+      <div class="join">
+        <button class="join-item btn btn-sm" [disabled]="currentPage <= 1" (click)="changePage(-1)">Previous</button>
+        <button class="join-item btn btn-sm no-animation bg-base-200 pointer-events-none">Page {{ currentPage }} of {{ totalPages }}</button>
+        <button class="join-item btn btn-sm" [disabled]="currentPage >= totalPages || totalRecords === 0" (click)="changePage(1)">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

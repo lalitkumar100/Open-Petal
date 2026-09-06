@@ -1,0 +1,71 @@
+<div class="p-4 md:p-8 flex flex-col min-h-full relative">
+  <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <h1 class="text-3xl font-bold text-base-content">Skill Catalog</h1>
+    
+    <div class="flex gap-2 w-full md:w-auto">
+      <div class="join w-full md:w-auto flex-1">
+        <input type="text" placeholder="Search categories..." class="input input-bordered join-item w-full md:w-64" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" />
+        <button class="btn btn-neutral join-item" (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+      <button class="btn btn-primary" (click)="openAddDialog()">
+        <mat-icon>add</mat-icon> Add
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-base-100 rounded-box shadow-md p-6 flex-1 relative">
+    <!-- Loading overlay -->
+    <div class="absolute inset-0 bg-base-100/50 z-10 flex items-center justify-center" *ngIf="isLoading && categories.length > 0">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+    
+    <div class="flex-1 flex items-center justify-center py-12" *ngIf="isLoading && categories.length === 0">
+      <app-loader mode="page"></app-loader>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto border border-base-300 rounded-lg" *ngIf="!isLoading || categories.length > 0">
+      <table class="table w-full">
+        <thead class="bg-base-200">
+          <tr>
+            <th>ID</th>
+            <th>Category Name</th>
+            <th>Created Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cat of categories" class="hover">
+            <td>{{ cat.id }}</td>
+            <td class="font-medium">{{ cat.name }}</td>
+            <td>{{ cat.createdAt | date:'medium' }}</td>
+            <td>
+              <button class="btn btn-sm btn-info text-white" [routerLink]="['/admin/skill-categories', cat.id, 'details']">Details</button>
+            </td>
+          </tr>
+          <tr *ngIf="categories.length === 0 && !isLoading">
+            <td colspan="4" class="text-center text-base-content/60 py-8">
+              No skill categories found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-wrap justify-between items-center mt-6" *ngIf="totalPages > 0">
+      <div class="text-sm text-base-content/70">
+        Showing {{ totalRecords === 0 ? 0 : currentPage * pageSize + 1 }} to {{ (currentPage + 1) * pageSize > totalRecords ? totalRecords : (currentPage + 1) * pageSize }} of {{ totalRecords }} entries
+      </div>
+      <div class="join">
+        <button class="join-item btn btn-sm" [disabled]="currentPage <= 0 || isLoading" (click)="changePage(-1)">Previous</button>
+        <button class="join-item btn btn-sm no-animation bg-base-200 pointer-events-none">Page {{ currentPage + 1 }} of {{ totalPages }}</button>
+        <button class="join-item btn btn-sm" [disabled]="currentPage >= totalPages - 1 || isLoading" (click)="changePage(1)">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-add-skill-category-dialog #addDialog (categoryAdded)="loadData()"></app-add-skill-category-dialog>

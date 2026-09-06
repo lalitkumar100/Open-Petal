@@ -1,0 +1,367 @@
+<div class="p-8 max-w-5xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Session Details #{{ sessionId }}</h1>
+    <a routerLink="/user/session" class="btn btn-ghost btn-sm">← Back to Sessions</a>
+  </div>
+  
+  <app-loader [isLoading]="isLoading" mode="flow" size="w-32 h-32"></app-loader>
+
+  <div *ngIf="error" class="alert alert-error mb-6">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <div *ngIf="session && !isLoading" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Sidebar: Telemetry -->
+    <div class="lg:col-span-1 space-y-6">
+      
+      <div class="bg-white rounded-box shadow-sm border border-slate-100 p-6">
+        <h3 class="font-bold text-lg border-b pb-3 mb-4">Partner</h3>
+        <p class="font-medium text-lg">{{ session.partnerName }}</p>
+        <p class="text-sm text-slate-500 uppercase tracking-widest font-semibold mt-1">Role: {{ session.isMentor ? 'Learner' : 'Mentor' }}</p>
+      </div>
+
+      <div class="bg-white rounded-box shadow-sm border border-slate-100 p-6">
+        <h3 class="font-bold text-lg border-b pb-3 mb-4">Details</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase block">Date & Time</span>
+            <span class="font-medium block">{{ session.sessionDate }}</span>
+            <span class="text-sm text-slate-600">{{ session.startTime }} - {{ session.endTime }}</span>
+          </div>
+
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase block">Skill</span>
+            <span class="font-medium block">{{ session.primarySkillName }}</span>
+          </div>
+
+          <div>
+            <span class="text-xs text-slate-500 font-semibold uppercase block">Mode</span>
+            <span class="font-medium block">{{ session.mode }}</span>
+          </div>
+          
+          <div *ngIf="session.mode === 'ONLINE' && session.meetingLink">
+            <span class="text-xs text-slate-500 font-semibold uppercase block">Meeting Link</span>
+            <a [href]="session.meetingLink" target="_blank" class="text-primary hover:underline text-sm break-all">{{ session.meetingLink }}</a>
+          </div>
+
+          <div *ngIf="session.mode === 'OFFLINE' && session.locationName">
+            <span class="text-xs text-slate-500 font-semibold uppercase block">Location</span>
+            <span class="font-medium text-sm">{{ session.locationName }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content: Lifecycle Action Panel -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <div class="bg-white rounded-box shadow-sm border border-slate-100 p-8">
+        
+        <div class="flex justify-between items-center mb-8 border-b pb-4">
+          <h2 class="text-xl font-bold">Lifecycle Controls</h2>
+          <div class="badge badge-lg" [ngClass]="{
+            'badge-warning': session.status === 'REQUESTED',
+            'badge-info': session.status === 'SCHEDULED',
+            'badge-primary': session.status === 'STARTED',
+            'badge-success': session.status === 'ENDED' || session.status === 'COMPLETED',
+            'badge-error': session.status === 'CANCELLED' || session.status === 'CONFLICT'
+          }">
+            {{ session.status }}
+          </div>
+        </div>
+
+        <!-- Global OTP feedback -->
+        <div *ngIf="otpError" class="alert alert-error text-sm py-2 px-3 rounded-md mb-6 flex">
+          <mat-icon class="text-[18px]">error</mat-icon>
+          <span>{{ otpError }}</span>
+        </div>
+        <div *ngIf="otpSuccess" class="alert alert-success text-sm py-2 px-3 rounded-md mb-6 flex">
+          <mat-icon class="text-[18px]">check_circle</mat-icon>
+          <span>{{ otpSuccess }}</span>
+        </div>
+
+        <!-- ==============================
+             PHASE 0: REQUESTED
+             ============================== -->
+        <div *ngIf="session.status === 'REQUESTED'" class="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-6">
+          <h3 class="font-bold text-lg mb-2">Pending Request</h3>
+          <p class="text-sm text-slate-600 mb-6">This session request is pending mentor approval.</p>
+
+          <div *ngIf="cancelError" class="alert alert-error text-sm py-2 px-3 rounded-md mb-4 flex">
+            <mat-icon class="text-[18px]">error</mat-icon>
+            <span>{{ cancelError }}</span>
+          </div>
+          <div *ngIf="cancelSuccess" class="alert alert-success text-sm py-2 px-3 rounded-md mb-4 flex">
+            <mat-icon class="text-[18px]">check_circle</mat-icon>
+            <span>{{ cancelSuccess }}</span>
+          </div>
+
+          <div class="flex gap-2">
+            <!-- Mentor Actions -->
+            <ng-container *ngIf="session.canAccept">
+              <button class="btn btn-success text-white" [disabled]="isCancelling || isAccepting || isDeclining" (click)="onAcceptSession()">
+                <span *ngIf="isAccepting" class="loading loading-spinner loading-xs"></span>
+                Accept Request
+              </button>
+              <button class="btn btn-error btn-outline" [disabled]="isCancelling || isAccepting || isDeclining" (click)="onDeclineSession()">
+                <span *ngIf="isDeclining" class="loading loading-spinner loading-xs"></span>
+                Decline Request
+              </button>
+            </ng-container>
+
+            <!-- Learner Cancel Action -->
+            <button *ngIf="session.canCancel" class="btn btn-error btn-outline" [disabled]="isCancelling || isAccepting || isDeclining" (click)="onCancelSession()">
+              <span *ngIf="isCancelling" class="loading loading-spinner loading-xs"></span>
+              Cancel Request
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ==============================
+             PHASE 1: START SESSION (SCHEDULED -> STARTED)
+             ============================== -->
+        <div *ngIf="session.status === 'SCHEDULED'" class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+          <h3 class="font-bold text-lg mb-2">Begin Session</h3>
+          <p class="text-sm text-slate-600 mb-6">You can begin the session 15 minutes before the scheduled start time.</p>
+
+          <div *ngIf="!isStartWindow" class="alert alert-info py-2 text-sm shadow-sm">
+            <mat-icon>schedule</mat-icon>
+            <span>The session is not within the ±15 min start window. Please wait.</span>
+          </div>
+
+          <div *ngIf="isStartWindow" class="space-y-4">
+            
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-semibold text-error flex items-center gap-1">
+                <mat-icon class="text-[16px]">timer</mat-icon> {{ startCountdownStr }} remaining
+              </span>
+            </div>
+            
+            <!-- Step A: Show OTP -->
+            <div *ngIf="!amIVerifiedStart">
+              <div *ngIf="myOtpCode" class="bg-primary bg-opacity-10 border border-primary p-4 rounded-lg text-center mb-4">
+                <span class="text-sm font-semibold text-primary block mb-1">Your Start Code</span>
+                <span class="text-3xl font-mono font-bold tracking-widest text-primary">{{ myOtpCode }}</span>
+              </div>
+              <button *ngIf="!myOtpCode" class="btn btn-primary w-full" (click)="fetchMyOtp()" [disabled]="isOtpLoading">
+                <span *ngIf="isOtpLoading" class="loading loading-spinner"></span>
+                Reveal My Start OTP
+              </button>
+              
+              <div class="divider text-xs">AND</div>
+
+              <!-- Step B: Verify Partner's OTP -->
+              <div class="join w-full">
+                <input type="text" placeholder="Enter Partner's OTP" class="input input-bordered join-item w-full" [(ngModel)]="otpInput" [disabled]="isOtpLoading">
+                <button class="btn btn-success join-item" (click)="verifyStartOtp()" [disabled]="isOtpLoading || !otpInput">Verify</button>
+              </div>
+            </div>
+
+            <!-- Wait for partner -->
+            <div *ngIf="amIVerifiedStart" class="alert alert-success py-3 flex">
+              <mat-icon>check_circle</mat-icon>
+              <div>
+                <p class="font-bold">You verified your partner successfully!</p>
+                <p class="text-sm">Waiting for {{ session.partnerName }} to enter their code...</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==============================
+             PHASE 2: END SESSION (STARTED -> ENDED)
+             ============================== -->
+        <div *ngIf="session.status === 'STARTED'" class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+          <h3 class="font-bold text-lg mb-2">End Session</h3>
+          <p class="text-sm text-slate-600 mb-6">You can end the session within 15 minutes of the scheduled end time.</p>
+
+          <div *ngIf="!isEndWindow" class="alert alert-info py-2 text-sm shadow-sm">
+            <mat-icon>schedule</mat-icon>
+            <span>The session is not within the ±15 min end window. Session is currently ongoing.</span>
+          </div>
+
+          <div *ngIf="isEndWindow" class="space-y-4">
+            
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-semibold text-error flex items-center gap-1">
+                <mat-icon class="text-[16px]">timer</mat-icon> {{ endCountdownStr }} remaining
+              </span>
+            </div>
+
+            <div *ngIf="!amIVerifiedEnd">
+              <div *ngIf="myOtpCode" class="bg-primary bg-opacity-10 border border-primary p-4 rounded-lg text-center mb-4">
+                <span class="text-sm font-semibold text-primary block mb-1">Your End Code</span>
+                <span class="text-3xl font-mono font-bold tracking-widest text-primary">{{ myOtpCode }}</span>
+              </div>
+              <button *ngIf="!myOtpCode" class="btn btn-primary w-full" (click)="fetchMyOtp()" [disabled]="isOtpLoading">
+                <span *ngIf="isOtpLoading" class="loading loading-spinner"></span>
+                Reveal My End OTP
+              </button>
+              
+              <div class="divider text-xs">AND</div>
+
+              <div class="join w-full">
+                <input type="text" placeholder="Enter Partner's OTP" class="input input-bordered join-item w-full" [(ngModel)]="otpInput" [disabled]="isOtpLoading">
+                <button class="btn btn-success join-item" (click)="verifyEndOtp()" [disabled]="isOtpLoading || !otpInput">Verify</button>
+              </div>
+            </div>
+
+            <div *ngIf="amIVerifiedEnd" class="alert alert-success py-3 flex">
+              <mat-icon>check_circle</mat-icon>
+              <div>
+                <p class="font-bold">You verified your partner successfully!</p>
+                <p class="text-sm">Waiting for {{ session.partnerName }} to end the session...</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+        <!-- ==============================
+             PHASE 3: COMPLETED OR CANCELLED
+             ============================== -->
+        <div *ngIf="session.status === 'ENDED' || session.status === 'COMPLETED'" class="bg-success bg-opacity-10 p-6 rounded-lg border border-success border-opacity-20 text-center">
+          <mat-icon class="text-success text-5xl mb-2">verified</mat-icon>
+          <h3 class="font-bold text-xl text-success">Session Completed Successfully!</h3>
+          <p class="text-sm text-slate-600 mt-2">Funds have been released to the mentor's wallet securely.</p>
+        </div>
+
+        <div *ngIf="session.status === 'CANCELLED'" class="bg-error bg-opacity-10 p-6 rounded-lg border border-error border-opacity-20 text-center">
+          <mat-icon class="text-error text-5xl mb-2">cancel</mat-icon>
+          <h3 class="font-bold text-xl text-error">Session Cancelled</h3>
+          <p class="text-sm text-slate-600 mt-2">This session was aborted and escrowed credits were refunded to the learner.</p>
+        </div>
+
+        <div *ngIf="session.status === 'CONFLICT'" class="bg-warning bg-opacity-10 p-6 rounded-lg border border-warning border-opacity-20 text-center">
+          <mat-icon class="text-warning text-5xl mb-2">report_problem</mat-icon>
+          <h3 class="font-bold text-xl text-warning">Conflict Raised</h3>
+          <p class="text-sm text-slate-600 mt-2">Escrow funds have been frozen. An administrator will review your case shortly.</p>
+        </div>
+
+
+        <!-- Dispute / Cancel Actions -->
+        <div class="mt-12 text-center" *ngIf="session.status === 'SCHEDULED' || session.status === 'STARTED'">
+          <div class="divider">Experiencing Issues?</div>
+          
+          <div class="flex flex-col items-center gap-4">
+            <button *ngIf="session.canCancel" class="btn btn-outline btn-error btn-sm" [disabled]="isCancelling || isAccepting || isDeclining" (click)="onCancelSession()">
+              <span *ngIf="isCancelling" class="loading loading-spinner loading-xs"></span>
+              Cancel Session
+            </button>
+            <button class="btn btn-outline btn-error btn-sm" [disabled]="!canRaiseConflict" onclick="conflict_modal.showModal()">Raise a Conflict</button>
+          </div>
+          <p class="text-xs text-slate-400 mt-2">Raising a conflict immediately freezes the session and notifies admins.</p>
+        </div>
+        
+        <!-- Conflict Section -->
+        <div *ngIf="session.status === 'CONFLICT'" class="bg-base-100 rounded-xl p-6 shadow-sm mb-6 border border-error">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-error flex items-center gap-2">
+              <mat-icon>warning</mat-icon> Session in Conflict
+            </h3>
+            <button class="btn btn-outline btn-error btn-sm" (click)="toggleConflictDetails()">
+              {{ showConflictDetails ? 'Hide Details' : 'View Conflict Details' }}
+              <span *ngIf="conflictDetailsLoading" class="loading loading-spinner loading-xs"></span>
+            </button>
+          </div>
+          
+          <div *ngIf="showConflictDetails && conflictDetails" class="space-y-4 animate-fade-in mt-4 border-t border-base-200 pt-4">
+            <div class="flex gap-2 items-center text-sm text-slate-500 mb-2">
+              <span class="badge badge-error badge-outline">{{ conflictDetails.status }}</span>
+              <span>Reported on {{ conflictDetails.createdAt | date:'short' }}</span>
+              <span>by <strong class="text-slate-800">{{ conflictDetails.raisedByName }}</strong></span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Learner Statement -->
+              <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Learner's Statement</span>
+                <p *ngIf="conflictDetails.learnerStory" class="text-sm text-slate-700 whitespace-pre-wrap">{{ conflictDetails.learnerStory }}</p>
+                <p *ngIf="!conflictDetails.learnerStory" class="text-sm text-slate-400 italic">Awaiting learner's statement...</p>
+              </div>
+              
+              <!-- Mentor Statement -->
+              <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Mentor's Statement</span>
+                <p *ngIf="conflictDetails.mentorStory" class="text-sm text-slate-700 whitespace-pre-wrap">{{ conflictDetails.mentorStory }}</p>
+                <p *ngIf="!conflictDetails.mentorStory" class="text-sm text-slate-400 italic">Awaiting mentor's statement...</p>
+              </div>
+            </div>
+
+            <!-- Admin Notes -->
+            <div *ngIf="conflictDetails.adminResolutionNotes" class="bg-info bg-opacity-10 rounded-lg p-4 border border-info mt-4">
+              <span class="text-xs font-bold text-info uppercase tracking-wider block mb-2 flex items-center gap-1">
+                <mat-icon class="text-[16px]">admin_panel_settings</mat-icon> Admin Resolution
+              </span>
+              <p class="text-sm text-slate-700 whitespace-pre-wrap">{{ conflictDetails.adminResolutionNotes }}</p>
+            </div>
+            
+            <!-- Submit Counter Story -->
+            <div *ngIf="canSubmitCounterStory" class="mt-6 border-t border-base-200 pt-4">
+              <h4 class="text-md font-semibold text-slate-800 mb-2">Provide your side of the story for administrative review:</h4>
+              <textarea [(ngModel)]="counterStoryInput" class="textarea textarea-bordered w-full h-24 mb-2" placeholder="Explain what happened..."></textarea>
+              <div *ngIf="storySubmitError" class="text-error text-sm mb-2">{{ storySubmitError }}</div>
+              <div *ngIf="storySubmitSuccess" class="text-success text-sm mb-2">{{ storySubmitSuccess }}</div>
+              <button class="btn btn-primary btn-sm" (click)="submitCounterStory()" [disabled]="isSubmittingCounterStory || !counterStoryInput.trim()">
+                <span *ngIf="isSubmittingCounterStory" class="loading loading-spinner loading-xs"></span>
+                Submit Statement
+              </button>
+              <p class="text-xs text-slate-400 mt-2">Note: This statement is final and cannot be edited once submitted.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Conflict Modal -->
+<dialog id="conflict_modal" class="modal">
+  <div class="modal-box relative">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" [disabled]="isConflictLoading">✕</button>
+    </form>
+    
+    <h3 class="font-bold text-lg mb-4 text-error flex items-center gap-2">
+      <mat-icon>report</mat-icon> Raise Session Conflict
+    </h3>
+    
+    <div *ngIf="conflictError" class="alert alert-error text-sm py-2 px-3 rounded-md mb-4 flex">
+      <mat-icon class="text-[18px]">error</mat-icon>
+      <span>{{ conflictError }}</span>
+    </div>
+
+    <div class="form-control mb-4">
+      <label class="label"><span class="label-text">Reason for Dispute</span></label>
+      <select class="select select-bordered" [(ngModel)]="conflictReason" [disabled]="isConflictLoading">
+        <option value="NO_SHOW">Partner No-Show</option>
+        <option value="BEHAVIOR">Inappropriate Behavior</option>
+        <option value="TECHNICAL_ISSUE">Technical Issue / Connection</option>
+        <option value="QUALITY">Low Quality / Not as described</option>
+        <option value="OTHER">Other</option>
+      </select>
+    </div>
+
+    <div class="form-control mb-6">
+      <label class="label"><span class="label-text">Your Story (Evidence)</span></label>
+      <textarea class="textarea textarea-bordered h-24" placeholder="Please provide details of what happened..." [(ngModel)]="conflictStory" [disabled]="isConflictLoading"></textarea>
+    </div>
+
+    <div class="modal-action">
+      <button class="btn btn-error" (click)="raiseConflict()" [disabled]="!conflictStory.trim() || isConflictLoading">
+        <span *ngIf="isConflictLoading" class="loading loading-spinner loading-xs"></span>
+        Submit Conflict to Admins
+      </button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button [disabled]="isConflictLoading">close</button>
+  </form>
+</dialog>

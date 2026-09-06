@@ -1,0 +1,103 @@
+<div class="flex h-[calc(100vh-8rem)] w-full overflow-hidden bg-base-100 rounded-box border border-base-300 shadow-sm">
+  
+  <!-- Left Pane: Conversations List -->
+  <div class="w-1/3 border-r border-base-300 flex flex-col bg-base-100">
+    <!-- Header -->
+    <div class="p-4 border-b border-base-300 bg-base-200/50">
+      <h2 class="text-xl font-bold">Messages</h2>
+    </div>
+
+    <!-- Scrollable List -->
+    <div class="flex-1 overflow-y-auto relative">
+      <app-loader [isLoading]="isLoadingConversations" mode="inline" message="Loading..."></app-loader>
+      <div *ngIf="!isLoadingConversations && conversations.length === 0" class="p-8 text-center text-base-content/50">
+        No conversations yet.
+      </div>
+      
+      <div *ngFor="let conv of conversations" 
+           (click)="selectConversation(conv)"
+           class="flex items-center gap-4 p-4 border-b border-base-300 cursor-pointer hover:bg-base-200 transition-colors"
+           [class.bg-primary]="activeConversation?.connectionRequestId === conv.connectionRequestId"
+           [class.text-primary-content]="activeConversation?.connectionRequestId === conv.connectionRequestId">
+        
+        <div class="avatar placeholder">
+          <div class="bg-neutral text-neutral-content rounded-full w-12 flex items-center justify-center" [class.bg-primary-focus]="activeConversation?.connectionRequestId === conv.connectionRequestId">
+            <span class="text-lg">{{ getInitials(conv.partnerName) }}</span>
+          </div>
+        </div>
+        
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-baseline mb-1">
+            <h3 class="font-bold truncate" [class.text-primary-content]="activeConversation?.connectionRequestId === conv.connectionRequestId">
+              {{ conv.partnerName }}
+            </h3>
+            <span class="text-xs opacity-70 whitespace-nowrap ml-2">
+              {{ conv.lastMessageTimestamp | date:'shortTime' }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <p class="text-sm truncate opacity-80" [class.font-semibold]="conv.unreadCount > 0 && activeConversation?.connectionRequestId !== conv.connectionRequestId">
+              {{ conv.lastMessagePreview }}
+            </p>
+            <span class="badge badge-primary badge-sm" *ngIf="conv.unreadCount > 0 && activeConversation?.connectionRequestId !== conv.connectionRequestId">
+              {{ conv.unreadCount }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Pane: Active Chat -->
+  <div class="w-2/3 flex flex-col bg-base-100 relative">
+    
+    <!-- Empty State -->
+    <div *ngIf="!activeConversation" class="flex-1 flex flex-col items-center justify-center text-base-content/50">
+      <mat-icon class="text-6xl mb-4 opacity-20">chat</mat-icon>
+      <p class="text-lg">Select a conversation to start messaging</p>
+    </div>
+
+    <!-- Active Chat Content -->
+    <ng-container *ngIf="activeConversation">
+      <!-- Chat Header -->
+      <div class="p-4 border-b border-base-300 flex items-center gap-4 bg-base-100 z-10 shadow-sm">
+        <div class="avatar placeholder">
+          <div class="bg-neutral text-neutral-content rounded-full w-10 flex items-center justify-center">
+            <span>{{ getInitials(activeConversation.partnerName) }}</span>
+          </div>
+        </div>
+        <div>
+          <h2 class="font-bold text-lg">{{ activeConversation.partnerName }}</h2>
+        </div>
+      </div>
+
+      <!-- Messages Area -->
+      <div class="flex-1 overflow-y-auto p-4 bg-base-200/30 relative" #scrollContainer>
+        <app-loader [isLoading]="isLoadingMessages" mode="page" message="Loading..."></app-loader>
+        <div *ngFor="let msg of messages" class="chat" [class.chat-end]="msg.senderId === currentUserId" [class.chat-start]="msg.senderId !== currentUserId">
+          <div class="chat-header mb-1 opacity-50 text-xs">
+            {{ msg.timestamp | date:'shortTime' }}
+          </div>
+          <div class="chat-bubble" [class.chat-bubble-primary]="msg.senderId === currentUserId" [class.chat-bubble-base-200]="msg.senderId !== currentUserId">
+            {{ msg.content }}
+          </div>
+          <div class="chat-footer opacity-50 text-xs mt-1" *ngIf="msg.senderId === currentUserId && msg.status === 'READ'">
+            Read
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="p-4 border-t border-base-300 bg-base-100 relative">
+        <app-loader [isLoading]="isSendingMessage" mode="inline" size="w-8 h-8"></app-loader>
+        <form (ngSubmit)="sendMessage()" class="flex gap-2">
+          <input type="text" name="messageInput" [(ngModel)]="newMessage" placeholder="Type a message..." class="input input-bordered flex-1 rounded-full bg-base-200" autocomplete="off" [disabled]="isSendingMessage" />
+          <button type="submit" class="btn btn-primary btn-circle" [disabled]="!newMessage.trim()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </form>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

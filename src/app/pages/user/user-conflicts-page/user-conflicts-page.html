@@ -1,0 +1,70 @@
+<div class="p-8 max-w-6xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">My Session Conflicts</h1>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center my-12">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error mb-6">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <div *ngIf="!isLoading && !error && conflicts.length === 0"
+    class="text-center text-slate-500 py-16 bg-white rounded-box shadow-sm border border-slate-100">
+    <mat-icon class="text-6xl mb-4 text-slate-300">verified</mat-icon>
+    <p class="text-xl font-medium">No conflicts found.</p>
+    <p class="text-sm mt-2">You haven't participated in any disputed sessions.</p>
+  </div>
+
+  <div class="overflow-x-auto bg-white rounded-box shadow-sm border border-slate-100"
+    *ngIf="!isLoading && conflicts.length > 0">
+    <table class="table w-full">
+      <thead>
+        <tr class="bg-slate-50 text-slate-600">
+          <th>ID</th>
+          <th>Role</th>
+          <th>Partner</th>
+          <th>Skill</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Date Filed</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let conflict of conflicts" class="hover:bg-slate-50">
+          <td class="font-medium">#{{ conflict.conflictId }}</td>
+          <td>
+            <div class="badge"
+              [ngClass]="{'badge-primary': conflict.myRole === 'LEARNER', 'badge-secondary': conflict.myRole === 'MENTOR'}">
+              {{ conflict.myRole === 'LEARNER' ? 'Learning' : 'Teaching' }}
+            </div>
+          </td>
+          <td class="font-medium">{{ conflict.partnerName }}</td>
+          <td>{{ conflict.primarySkillName }}</td>
+          <td>
+            <span class="text-sm font-semibold text-slate-700">{{ conflict.reason }}</span>
+            <span class="text-xs text-slate-500 block mt-1" *ngIf="conflict.raisedByMe">Raised by you</span>
+            <span class="text-xs text-slate-500 block mt-1" *ngIf="!conflict.raisedByMe">Raised against you</span>
+          </td>
+          <td>
+            <div class="badge" [ngClass]="{
+              'badge-warning': conflict.status === 'OPEN',
+              'badge-info': conflict.status === 'IN_REVIEW',
+              'badge-success': conflict.status === 'RESOLVED'
+            }">
+              {{ conflict.status }}
+            </div>
+          </td>
+          <td class="text-sm text-slate-500">{{ conflict.createdAt | date:'short' }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" (click)="viewSession(conflict.sessionId)">View Session</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

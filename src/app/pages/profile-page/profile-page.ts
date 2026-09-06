@@ -1,5 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { UserService, UserProfile } from '../../core/services/user.service';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { UserService, UserProfile, AvailabilitySlot } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -9,6 +9,7 @@ import { UserService, UserProfile } from '../../core/services/user.service';
 })
 export class ProfilePage implements OnInit {
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   // User Data
   user: UserProfile = {
@@ -20,7 +21,14 @@ export class ProfilePage implements OnInit {
     gender: '',
     role: '',
     status: '',
+    description: '',
   };
+
+  // Availability state
+  availabilitySlots: AvailabilitySlot[] = [];
+  newSlot: AvailabilitySlot = { dayOfWeek: 'MONDAY', startTime: '09:00', endTime: '17:00' };
+  slotError = '';
+  isAddingSlot = false;
 
   // State
   isEditMode = false;
@@ -42,6 +50,12 @@ export class ProfilePage implements OnInit {
 
   pendingStatusChange: string | null = null;
 
+  get maxDob(): string {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split('T')[0];
+  }
+
   constructor() {}
 
   ngOnInit(): void {
@@ -57,10 +71,30 @@ export class ProfilePage implements OnInit {
           this.user = { ...this.user, ...res.data };
           this.editForm = { ...this.user };
         }
+        this.loadAvailabilitySlots();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
         console.error('Failed to load profile', err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadAvailabilitySlots(): void {
+    this.userService.getAvailabilitySlots().subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res.success) {
+          this.availabilitySlots = res.data;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Failed to load availability slots', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -106,22 +140,28 @@ export class ProfilePage implements OnInit {
       lastName: this.editForm.lastName,
       phone: this.editForm.phone,
       dob: this.editForm.dob,
-      gender: this.editForm.gender
+      gender: this.editForm.gender,
+      description: this.editForm.description
     };
 
     this.userService.updateProfile(payload).subscribe({
       next: (res) => {
+        console.log('Update profile response:', res);
         this.isSaving = false;
-        if (res.success && res.data) {
-          this.user = { ...this.user, ...res.data };
+        if (res.success) {
+          if (res.data) {
+            this.user = { ...this.user, ...res.data };
+          }
           this.isEditMode = false;
         } else {
           this.profileError = res.message || 'Failed to update profile';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isSaving = false;
         this.profileError = err.error?.message || 'An error occurred while updating profile';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -185,10 +225,12 @@ export class ProfilePage implements OnInit {
         } else {
           this.passwordError = res.message || 'Failed to update password';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isUpdatingPassword = false;
         this.passwordError = err.error?.message || 'An error occurred';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -202,4 +244,70 @@ export class ProfilePage implements OnInit {
   showCurrentPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
+
+  // Add slot logic
+  onAddSlot() {
+    this.slotError = '';
+
+    if (!this.newSlot.startTime || !this.newSlot.endTime) {
+      this.slotError = 'Start and End time are required.';
+      return;
+    }
+
+    const startSplit = this.newSlot.startTime.split(':');
+    const endSplit = this.newSlot.endTime.split(':');
+    
+    const startMins = parseInt(startSplit[0]) * 60 + parseInt(startSplit[1]);
+    const endMins = parseInt(endSplit[0]) * 60 + parseInt(endSplit[1]);
+
+    if (startMins >= endMins) {
+      this.slotError = 'Start time must be before end time.';
+      return;
+    }
+
+    if (endMins - startMins < 60) {
+      this.slotError = 'Slot duration must be at least 1 hour.';
+      return;
+    }
+
+    const formattedSlot = {
+      dayOfWeek: this.newSlot.dayOfWeek,
+      startTime: this.newSlot.startTime,
+      endTime: this.newSlot.endTime
+    };
+
+    this.isAddingSlot = true;
+    this.userService.addAvailabilitySlot(formattedSlot).subscribe({
+      next: (res) => {
+        this.isAddingSlot = false;
+        if (res.success) {
+          this.availabilitySlots = res.data;
+          this.newSlot = { dayOfWeek: 'MONDAY', startTime: '09:00', endTime: '17:00' };
+        } else {
+          this.slotError = res.message || 'Failed to add slot';
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isAddingSlot = false;
+        this.slotError = err.error?.message || 'An error occurred';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onRemoveSlot(slot: AvailabilitySlot) {
+    this.userService.removeAvailabilitySlot(slot).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.availabilitySlots = res.data;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to remove slot', err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }
