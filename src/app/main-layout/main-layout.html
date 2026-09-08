@@ -1,18 +1,23 @@
-<div class="drawer drawer-end" data-theme="openpetal-light">
+<div class="drawer drawer-end h-screen w-screen overflow-hidden" data-theme="openpetal-light">
   <input id="chat-drawer" type="checkbox" class="drawer-toggle" [checked]="isAiPanelOpen" (change)="isAiPanelOpen = !isAiPanelOpen" />
   
-  <div class="drawer-content flex flex-col h-screen">
-    <!-- Existing Left Sidebar Drawer -->
-    <div class="drawer lg:drawer-open h-full">
+  <!-- Outer Drawer Content Wrapper: Add min-h-0 and overflow-hidden -->
+  <div class="drawer-content flex flex-col h-full w-full min-h-0 overflow-hidden">
+    
+    <!-- Inner Drawer (Sidebar) -->
+    <div class="drawer lg:drawer-open h-full w-full min-h-0">
         <input id="my-drawer-4" type="checkbox" class="drawer-toggle inline" />
         
-        <div class="drawer-content flex flex-col h-full">
-            <!-- Navbar / Breadcrumb Component -->
-            <app-breadcrumb-component></app-breadcrumb-component>
+        <!-- Inner Content Column: Keep header static, do NOT put overflow-y-auto here -->
+        <div class="drawer-content flex flex-col h-full w-full min-h-0 overflow-hidden">
+            <!-- Fixed Header / Breadcrumbs -->
+            <div class="shrink-0 z-10">
+              <app-breadcrumb-component></app-breadcrumb-component>
+            </div>
             
-            <!-- Page content here -->
-            <main class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
-                <app-main-area-component></app-main-area-component>
+            <!-- ONLY THIS CONTAINER SCROLLS: flex-1, min-h-0, overflow-y-auto -->
+            <main class="flex-1 min-h-0 w-full overflow-y-auto p-4 md:p-6 bg-surface-container-lowest relative">
+                <app-main-area-component class="block w-full"></app-main-area-component>
             </main>
         </div>
 
@@ -27,8 +32,7 @@
   <!-- Right Drawer for AI Chat -->
   <div class="drawer-side z-50">
     <label for="chat-drawer" aria-label="close chat" class="drawer-overlay"></label>
-    <div class="bg-base-100 min-h-full w-80 sm:w-96 flex flex-col overflow-hidden shadow-2xl">
-      <!-- Header -->
+    <div class="bg-base-100 min-h-full w-[100vw] sm:w-96 flex flex-col overflow-hidden shadow-2xl">
       <div class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md z-10 shrink-0">
           <h3 class="font-bold flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -38,7 +42,6 @@
           </h3>
           <button (click)="isAiPanelOpen = false" class="text-white hover:text-gray-200 font-bold p-1">✕</button>
       </div>
-      <!-- Chat component -->
       <div class="flex-1 overflow-hidden relative bg-white">
           <app-chat-panel class="absolute inset-0 h-full w-full"></app-chat-panel>
       </div>

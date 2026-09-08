@@ -1,0 +1,521 @@
+<!-- ========================================== -->
+<!-- 1. Root Template: src/app/app.html -->
+<!-- ========================================== -->
+
+<router-outlet></router-outlet>
+<app-access-denied-dialog></app-access-denied-dialog>
+<app-unauthorized-dialog></app-unauthorized-dialog>
+<app-server-down-dialog></app-server-down-dialog>
+
+<!-- ========================================== -->
+<!-- 2. Shell Template: src/app/main-layout/main-layout.html -->
+<!-- ========================================== -->
+
+<div class="drawer drawer-end h-screen overflow-hidden" data-theme="openpetal-light">
+  <input id="chat-drawer" type="checkbox" class="drawer-toggle" [checked]="isAiPanelOpen" (change)="isAiPanelOpen = !isAiPanelOpen" />
+  
+  <div class="drawer-content flex flex-col h-full">
+    <!-- Existing Left Sidebar Drawer -->
+    <div class="drawer lg:drawer-open h-full">
+        <input id="my-drawer-4" type="checkbox" class="drawer-toggle inline" />
+        
+        <div class="drawer-content flex flex-col h-full overflow-y-auto">
+            <!-- Navbar / Breadcrumb Component -->
+            <app-breadcrumb-component></app-breadcrumb-component>
+            
+            <!-- Page content here -->
+            <main class="flex-1 min-h-0 w-full p-4 bg-surface-container-lowest relative">
+                <app-main-area-component class="block w-full"></app-main-area-component>
+            </main>
+        </div>
+
+        <!-- Sidebar Component Wrapper -->
+        <div class="drawer-side is-drawer-close:overflow-visible z-20">
+            <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+            <app-sidebar-component class="h-full"></app-sidebar-component>
+        </div>
+    </div>
+  </div>
+
+  <!-- Right Drawer for AI Chat -->
+  <div class="drawer-side z-50">
+    <label for="chat-drawer" aria-label="close chat" class="drawer-overlay"></label>
+    <div class="bg-base-100 min-h-full w-[100vw] sm:w-96 flex flex-col overflow-hidden shadow-2xl">
+      <!-- Header -->
+      <div class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md z-10 shrink-0">
+          <h3 class="font-bold flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+            </svg>
+            Open Petal AI
+          </h3>
+          <button (click)="isAiPanelOpen = false" class="text-white hover:text-gray-200 font-bold p-1">✕</button>
+      </div>
+      <!-- Chat component -->
+      <div class="flex-1 overflow-hidden relative bg-white">
+          <app-chat-panel class="absolute inset-0 h-full w-full"></app-chat-panel>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating AI Button -->
+<button (click)="isAiPanelOpen = true" class="btn btn-circle bg-blue-600 hover:bg-blue-700 text-white fixed bottom-6 right-6 z-40 shadow-lg border-none" aria-label="Open AI Chat">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    </svg>
+</button>
+
+<!-- ========================================== -->
+<!-- 3. Header Template: src/app/components/breadcrumb-component/breadcrumb-component.html -->
+<!-- ========================================== -->
+
+<nav class="navbar w-full bg-primary/10 px-4">
+    <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost drawer-button">
+        <!-- lucide: menu -->
+        <mat-icon class="my-1.5 inline-block size-5">menu</mat-icon>
+    </label>
+    <div class="breadcrumbs text-sm px-2">
+        <ul>
+            <li *ngFor="let crumb of breadcrumbs; let last = last">
+                <a *ngIf="!last" [routerLink]="crumb.url">{{ crumb.label }}</a>
+                <span *ngIf="last">{{ crumb.label }}</span>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ========================================== -->
+<!-- 4. Main Area Component: src/app/components/main-area-component/main-area-component.html -->
+<!-- ========================================== -->
+
+<div class="w-full relative">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- ========================================== -->
+<!-- 5. Profile Page Component: src/app/pages/profile-page/profile-page.html -->
+<!-- ========================================== -->
+
+<div class="max-w-5xl mx-auto pb-10">
+  
+  <app-loader 
+    [isLoading]="isLoading || isSaving || isUpdatingPassword" 
+    mode="page" 
+    [message]="isLoading ? 'Loading Profile...' : (isSaving ? 'Saving Profile...' : 'Updating Password...')">
+  </app-loader>
+
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="font-display-lg text-[32px] leading-tight text-tertiary-fixed font-bold tracking-tight">My Profile</h1>
+    <p class="font-body-md text-secondary-fixed-dim mt-1">Manage your personal information, account status, and credentials</p>
+  </div>
+
+  <!-- Hero Card -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 mb-6 !rounded-none">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <!-- Left & Middle: Avatar and Details -->
+      <div class="flex items-center gap-6">
+        <!-- Avatar -->
+        <div class="w-20 h-20 rounded-full bg-slate-800 text-cyan-300 font-bold text-2xl flex items-center justify-center border-2 border-cyan-500/40 shrink-0">
+          {{ initials }}
+        </div>
+        
+        <!-- Info -->
+        <div>
+          <div class="flex flex-wrap items-center gap-3">
+            <h2 class="text-xl font-bold text-slate-800 whitespace-nowrap">{{ user.firstName }} {{ user.lastName }}</h2>
+            <div class="flex items-center gap-2">
+              <div class="badge bg-[#d7f7f5] text-[#086972] font-semibold border-none rounded-sm px-3 whitespace-nowrap">{{ user.role }}</div>
+              <div class="badge bg-amber-100 text-amber-700 font-semibold border-none rounded-sm px-3 flex items-center gap-1 whitespace-nowrap">
+                <mat-icon class="w-3.5 h-3.5" style="font-size: 0.875rem; width: 0.875rem; height: 0.875rem;">monetization_on</mat-icon>
+                {{ user.credit || 0 }} Credits
+              </div>
+            </div>
+          </div>
+          <p class="text-slate-500 mt-1 flex items-center gap-1.5">
+            <mat-icon class="w-4 h-4 mr-1.5" style="font-size: 1rem; width: 1rem; height: 1rem;">mail</mat-icon>
+            {{ user.email }}
+          </p>
+        </div>
+      </div>
+      
+      <!-- Right: Actions -->
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex items-center gap-2 text-sm font-medium border border-slate-200 px-3 py-1.5 bg-slate-50">
+          <span class="w-2 h-2 rounded-full" [class.bg-green-500]="user.status === 'ACTIVE'" [class.bg-red-500]="user.status === 'INACTIVE'"></span>
+          {{ user.status === 'ACTIVE' ? 'Active' : 'Inactive' }}
+        </div>
+        <button class="btn btn-outline border-slate-300 text-slate-700 !rounded-none" (click)="toggleEditMode()">
+          <mat-icon class="w-4 h-4 mr-1" style="font-size: 1rem; width: 1rem; height: 1rem;">edit</mat-icon>
+          {{ isEditMode ? 'Cancel Edit' : 'Edit Profile' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 2: Personal Information Card -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 mb-6 !rounded-none">
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <mat-icon class="w-5 h-5 text-[#0e8ca5]">person</mat-icon>
+      <h3 class="text-lg font-bold text-slate-800">Personal Information</h3>
+    </div>
+
+    <!-- State A: Read-Only -->
+    <ng-container *ngIf="!isEditMode">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">First Name</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.firstName }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Last Name</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.lastName }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Email</span>
+          <div class="flex items-center gap-2">
+            <span class="text-base text-slate-800 font-medium">{{ user.email }}</span>
+            <mat-icon class="w-3.5 h-3.5 text-slate-400" style="font-size: 0.875rem; width: 0.875rem; height: 0.875rem;">lock</mat-icon>
+          </div>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Phone Number</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.phone }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Date of Birth</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.dob }}</span>
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Gender</span>
+          <span class="text-base text-slate-800 font-medium">{{ user.gender }}</span>
+        </div>
+        <div class="md:col-span-2">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">About Me</span>
+          <p class="text-base text-slate-800 font-medium whitespace-pre-wrap">{{ user.description || 'No description provided.' }}</p>
+        </div>
+        <div class="md:col-span-2 mt-4">
+          <div class="bg-slate-50 border border-slate-200 p-4 flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">Account Discoverability</h4>
+              <p class="text-sm text-slate-500 mt-0.5">Toggle to set your account to active or paused state.</p>
+            </div>
+            <label class="label cursor-pointer p-0">
+              <input type="checkbox" class="toggle toggle-accent" [checked]="user.status === 'ACTIVE'" (change)="toggleAccountStatus()" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- State B: Edit Mode -->
+    <ng-container *ngIf="isEditMode">
+      <form #profileForm="ngForm" (submit)="saveProfile($event)">
+        <div *ngIf="profileError" class="mb-4 text-sm text-error bg-error/10 p-2 rounded border border-error/20">
+          {{ profileError }}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">First Name</span></label>
+            <input type="text" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.firstName" name="firstName" required />
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Last Name</span></label>
+            <input type="text" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.lastName" name="lastName" required />
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Email</span></label>
+            <input type="email" class="input input-bordered w-full !rounded-none bg-slate-100 cursor-not-allowed text-slate-500" [value]="editForm.email" disabled />
+            <label class="label py-1"><span class="label-text-alt text-slate-500">Email cannot be modified</span></label>
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Phone Number</span></label>
+            <input type="tel" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.phone" name="phone" required pattern="[0-9]{10}" #phoneInput="ngModel" />
+            <label class="label py-1" *ngIf="phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)">
+              <span class="label-text-alt text-error font-medium">Must be exactly 10 digits</span>
+            </label>
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Date of Birth</span></label>
+            <input type="date" class="input input-bordered w-full !rounded-none" [(ngModel)]="editForm.dob" name="dob" required [max]="maxDob" #dobInput="ngModel" />
+            <label class="label py-1" *ngIf="dobInput.invalid && (dobInput.dirty || dobInput.touched)">
+              <span class="label-text-alt text-error font-medium">Must be at least 18 years old</span>
+            </label>
+          </div>
+          <div class="form-control w-full">
+            <label class="label py-1"><span class="label-text font-semibold text-slate-600">Gender</span></label>
+            <select class="select select-bordered w-full !rounded-none" [(ngModel)]="editForm.gender" name="gender" required>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="form-control w-full md:col-span-2">
+            <label class="label py-1">
+              <span class="label-text font-semibold text-slate-600">About Me</span>
+              <span class="label-text-alt" [class.text-error]="(editForm.description?.length || 0) > 300">{{ editForm.description?.length || 0 }}/300</span>
+            </label>
+            <textarea class="textarea textarea-bordered w-full p-3 h-24 !rounded-none" [(ngModel)]="editForm.description" name="description" placeholder="Write something about yourself..." maxlength="300"></textarea>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-end gap-3 border-t border-slate-100 pt-4">
+          <button type="button" class="btn btn-outline border-slate-300 text-slate-600 !rounded-none px-6" (click)="cancelEdit()">Cancel</button>
+          <button type="submit" class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none px-6" [disabled]="profileForm.invalid">
+            <mat-icon class="w-4 h-4 mr-1.5" style="font-size: 1rem; width: 1rem; height: 1rem;">save</mat-icon>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+
+  <!-- Section: Availability Slots -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 mb-6 !rounded-none">
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <mat-icon class="w-5 h-5 text-[#0e8ca5]">schedule</mat-icon>
+      <h3 class="text-lg font-bold text-slate-800">Weekly Availability</h3>
+    </div>
+
+    <!-- Add Slot Form -->
+    <div class="bg-slate-50 p-4 border border-slate-200 mb-6 flex flex-wrap items-end gap-4">
+      <div class="form-control w-full sm:w-auto flex-1">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Day of Week</span></label>
+        <select class="select select-bordered w-full !rounded-none" [(ngModel)]="newSlot.dayOfWeek">
+          <option value="MONDAY">Monday</option>
+          <option value="TUESDAY">Tuesday</option>
+          <option value="WEDNESDAY">Wednesday</option>
+          <option value="THURSDAY">Thursday</option>
+          <option value="FRIDAY">Friday</option>
+          <option value="SATURDAY">Saturday</option>
+          <option value="SUNDAY">Sunday</option>
+        </select>
+      </div>
+      <div class="form-control w-full sm:w-auto flex-1">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Start Time</span></label>
+        <input type="time" class="input input-bordered w-full !rounded-none" [(ngModel)]="newSlot.startTime" />
+      </div>
+      <div class="form-control w-full sm:w-auto flex-1">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">End Time</span></label>
+        <input type="time" class="input input-bordered w-full !rounded-none" [(ngModel)]="newSlot.endTime" />
+      </div>
+      <div class="w-full sm:w-auto mt-2 sm:mt-0">
+        <button class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none w-full" (click)="onAddSlot()" [disabled]="isAddingSlot">
+          <span *ngIf="isAddingSlot" class="loading loading-spinner loading-sm"></span>
+          <mat-icon *ngIf="!isAddingSlot" class="w-4 h-4 mr-1">add</mat-icon>
+          Add Slot
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="slotError" class="mb-4 text-sm text-error bg-error/10 p-2 rounded border border-error/20">
+      {{ slotError }}
+    </div>
+
+    <!-- Existing Slots List -->
+    <div class="overflow-x-auto border border-slate-200">
+      <table class="table table-zebra w-full">
+        <thead class="bg-slate-100 text-slate-600">
+          <tr>
+            <th>Day</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th class="w-16">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="availabilitySlots.length === 0">
+            <td colspan="4" class="text-center py-8 text-slate-500">No availability slots added yet.</td>
+          </tr>
+          <tr *ngFor="let slot of availabilitySlots">
+            <td class="font-medium capitalize">{{ slot.dayOfWeek.toLowerCase() }}</td>
+            <td>{{ slot.startTime }}</td>
+            <td>{{ slot.endTime }}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm text-error" (click)="onRemoveSlot(slot)">
+                <mat-icon class="w-4 h-4" style="font-size: 1rem; width: 1rem; height: 1rem;">delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 3: Security & Password -->
+  <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <mat-icon class="w-5 h-5 text-[#0e8ca5]">shield</mat-icon>
+      <h3 class="text-lg font-bold text-slate-800">Security & Password</h3>
+    </div>
+    
+    <form (submit)="updatePassword($event)" class="max-w-md space-y-4">
+      <div *ngIf="passwordError" class="text-sm text-error bg-error/10 p-2 rounded border border-error/20">
+        {{ passwordError }}
+      </div>
+      <div *ngIf="passwordMessage" class="text-sm text-success bg-success/10 p-2 rounded border border-success/20">
+        {{ passwordMessage }}
+      </div>
+      <div class="form-control w-full">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Current Password</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none">
+          <mat-icon class="w-4 h-4 opacity-50" style="font-size: 1rem; width: 1rem; height: 1rem;">lock</mat-icon>
+          <input [type]="showCurrentPassword ? 'text' : 'password'" class="grow" placeholder="••••••••" [(ngModel)]="passwordForm.currentPassword" name="currentPassword" required />
+          <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="showCurrentPassword = !showCurrentPassword">
+            <mat-icon *ngIf="!showCurrentPassword" class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem;">visibility</mat-icon>
+            <mat-icon *ngIf="showCurrentPassword" class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem;">visibility_off</mat-icon>
+          </button>
+        </label>
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">New Password</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none">
+          <mat-icon class="w-4 h-4 opacity-50" style="font-size: 1rem; width: 1rem; height: 1rem;">lock</mat-icon>
+          <input [type]="showNewPassword ? 'text' : 'password'" class="grow" placeholder="••••••••" [(ngModel)]="passwordForm.newPassword" name="newPassword" required minlength="8" />
+          <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="showNewPassword = !showNewPassword">
+            <mat-icon *ngIf="!showNewPassword" class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem;">visibility</mat-icon>
+            <mat-icon *ngIf="showNewPassword" class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem;">visibility_off</mat-icon>
+          </button>
+        </label>
+        <label class="label py-1"><span class="label-text-alt text-slate-500">Must be at least 8 characters long</span></label>
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label py-1"><span class="label-text font-semibold text-slate-600">Confirm New Password</span></label>
+        <label class="input input-bordered flex items-center gap-2 !rounded-none" [class.input-error]="passwordForm.newPassword && passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword">
+          <mat-icon class="w-4 h-4 opacity-50" style="font-size: 1rem; width: 1rem; height: 1rem;">lock</mat-icon>
+          <input [type]="showConfirmPassword ? 'text' : 'password'" class="grow" placeholder="••••••••" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword" required />
+          <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="showConfirmPassword = !showConfirmPassword">
+            <mat-icon *ngIf="!showConfirmPassword" class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem;">visibility</mat-icon>
+            <mat-icon *ngIf="showConfirmPassword" class="w-4 h-4 opacity-70" style="font-size: 1rem; width: 1rem; height: 1rem;">visibility_off</mat-icon>
+          </button>
+        </label>
+        <label class="label py-1" *ngIf="passwordForm.newPassword && passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword">
+          <span class="label-text-alt text-error font-medium">Passwords do not match!</span>
+        </label>
+      </div>
+
+      <div class="mt-4 pt-2">
+        <button type="submit" class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none" [disabled]="!passwordForm.currentPassword || !passwordForm.newPassword || passwordForm.newPassword !== passwordForm.confirmPassword || isUpdatingPassword">
+          <mat-icon *ngIf="!isUpdatingPassword" class="w-4 h-4 mr-1.5" style="font-size: 1rem; width: 1rem; height: 1rem;">key</mat-icon>
+          <span *ngIf="isUpdatingPassword" class="loading loading-spinner loading-sm mr-1.5"></span>
+          {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DaisyUI Confirmation Modal for Saving Profile -->
+<dialog id="saveConfirmDialog" class="modal">
+  <div class="modal-box !rounded-none">
+    <h3 class="font-bold text-lg text-slate-800">Confirm Profile Update</h3>
+    <p class="py-4 text-slate-600">Are you sure you want to save these changes to your personal information?</p>
+    <div class="modal-action">
+      <form method="dialog" class="flex gap-3">
+        <button class="btn btn-outline border-slate-300 text-slate-600 !rounded-none" (click)="cancelSaveProfile()">Cancel</button>
+        <button class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none" (click)="confirmSaveProfile()">
+          <span *ngIf="isSaving" class="loading loading-spinner loading-sm mr-1.5"></span>
+          Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop" (click)="cancelSaveProfile()">
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- Status Confirmation Modal -->
+<dialog id="statusConfirmDialog" class="modal">
+  <div class="modal-box !rounded-none">
+    <h3 class="font-bold text-lg text-slate-800">Change Account Status</h3>
+    <p class="py-4 text-slate-600">Are you sure you want to change your account status?</p>
+    <div class="modal-action">
+      <form method="dialog" class="flex gap-3">
+        <button class="btn btn-outline border-slate-300 text-slate-600 !rounded-none" (click)="cancelStatusChange()">Cancel</button>
+        <button class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none" (click)="confirmStatusChange()">
+          Yes, change status
+        </button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop" (click)="cancelStatusChange()">
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- Password Update Confirmation Modal -->
+<dialog id="passwordConfirmDialog" class="modal">
+  <div class="modal-box !rounded-none">
+    <h3 class="font-bold text-lg text-slate-800">Update Password</h3>
+    <p class="py-4 text-slate-600">Are you sure you want to change your login credentials? You will need to use your new password next time you log in.</p>
+    <div class="modal-action">
+      <form method="dialog" class="flex gap-3">
+        <button class="btn btn-outline border-slate-300 text-slate-600 !rounded-none" (click)="cancelUpdatePassword()">Cancel</button>
+        <button class="btn bg-[#0e8ca5] hover:bg-[#0a6e82] text-white border-none !rounded-none" (click)="confirmUpdatePassword()">
+          Update Password
+        </button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop" (click)="cancelUpdatePassword()">
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- ========================================== -->
+<!-- 6. Global CSS: src/styles.css (Partial) -->
+<!-- ========================================== -->
+<style>
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: openpetal;
+}
+
+@plugin "daisyui/theme" {
+  name: "openpetal";
+  default: true;
+  prefersdark: false;
+
+  /* Primary - Ocean Blue */
+  --color-primary: #0284c7;
+  --color-primary-content: #ffffff;
+
+  /* Secondary - Teal */
+  --color-secondary: #0d9488;
+  --color-secondary-content: #ffffff;
+
+  /* Accent - Cyan */
+  --color-accent: #06b6d4;
+  --color-accent-content: #ffffff;
+
+  /* Navy */
+  --color-neutral: #0f2a43;
+  --color-neutral-content: #ffffff;
+
+  /* Light theme */
+  --color-base-100: #ffffff;
+  --color-base-200: #f0f9ff;
+  --color-base-300: #bae6fd;
+  --color-base-content: #0f2a43;
+
+  /* Status */
+  --color-info: #0284c7;
+  --color-success: #14b8a6;
+  --color-warning: #eab308;
+  --color-error: #e05252;
+
+  /* Shape */
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+
+  --border: 1px;
+}
+</style>

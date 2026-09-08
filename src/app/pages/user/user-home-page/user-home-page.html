@@ -1,4 +1,4 @@
-<div class="p-6">
+<div class="p-6 w-full">
   <!-- Page Header with Primary Action Buttons -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
     <div>
@@ -7,6 +7,9 @@
     </div>
     <!-- Action Button Group -->
     <div class="flex flex-wrap items-center gap-3">
+      <button class="btn btn-secondary btn-outline !rounded-none" (click)="openRequestModal()">
+        <mat-icon class="mr-1 text-[18px]">add_circle_outline</mat-icon> Request a New Skill
+      </button>
       <button class="btn btn-primary !rounded-none" (click)="openAddSkillModal()">
         <mat-icon class="mr-1">add</mat-icon> Add More Skill
       </button>
@@ -17,7 +20,7 @@
   </div>
 
   <div *ngIf="isLoading" class="flex justify-center my-12">
-    <span class="loading loading-spinner text-primary loading-lg"></span>
+    <app-loader [isLoading]="true" mode="flow" size="w-[170px] h-[170px]"></app-loader>
   </div>
 
   <!-- Tables Container Stack -->
@@ -159,11 +162,14 @@
         <div class="form-control">
           <label class="label pb-1"><span
               class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Skill</span></label>
-          <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
-            formControlName="skillId">
-            <option value="" disabled selected>Select skill</option>
-            <option *ngFor="let sysSkill of systemSkills" [value]="sysSkill.id">{{ sysSkill.name }}</option>
-          </select>
+          <div class="relative w-full">
+            <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+              formControlName="skillId" [disabled]="isLoading">
+              <option value="" disabled selected>{{ isLoading ? 'Loading skills...' : 'Select skill' }}</option>
+              <option *ngFor="let sysSkill of systemSkills" [value]="sysSkill.id">{{ sysSkill.name }}</option>
+            </select>
+            <span *ngIf="isLoading" class="loading loading-spinner loading-xs text-primary absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none"></span>
+          </div>
         </div>
         <div class="form-control">
           <label class="label pb-1"><span
@@ -235,11 +241,14 @@
         <div class="form-control">
           <label class="label pb-1"><span
               class="label-text font-semibold uppercase tracking-wider text-xs text-slate-700">Skill</span></label>
-          <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
-            formControlName="skillId">
-            <option value="" disabled selected>Select skill</option>
-            <option *ngFor="let sysSkill of systemSkills" [value]="sysSkill.id">{{ sysSkill.name }}</option>
-          </select>
+          <div class="relative w-full">
+            <select class="select select-bordered w-full !rounded-none focus:outline-none focus:border-primary"
+              formControlName="skillId" [disabled]="isLoading">
+              <option value="" disabled selected>{{ isLoading ? 'Loading skills...' : 'Select skill' }}</option>
+              <option *ngFor="let sysSkill of systemSkills" [value]="sysSkill.id">{{ sysSkill.name }}</option>
+            </select>
+            <span *ngIf="isLoading" class="loading loading-spinner loading-xs text-primary absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none"></span>
+          </div>
         </div>
         <div class="form-control">
           <label class="label pb-1"><span
@@ -308,3 +317,48 @@
   (close)="closeRoadmapModal()"
   (roadmapUpdated)="onRoadmapUpdated($event)">
 </app-roadmap-dialog>
+
+<!-- 5. Request Skill Modal -->
+<dialog id="request_skill_modal" class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100/90 backdrop-blur-md shadow-2xl border border-white/20">
+    <h3 class="font-bold text-2xl text-primary mb-4">Request a New Skill</h3>
+    <p class="py-2 text-base-content/70">Couldn't find the skill you were looking for? Let us know and we'll review it!</p>
+    
+    <!-- Success Alert -->
+    <div *ngIf="requestSuccess" class="alert alert-success shadow-lg mb-4 animate-fade-in">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span>Your request has been submitted successfully!</span>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="requestError" class="alert alert-error shadow-lg mb-4 animate-fade-in">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span>{{ requestError }}</span>
+    </div>
+
+    <div class="form-control w-full mt-4" *ngIf="!requestSuccess">
+      <label class="label">
+        <span class="label-text font-semibold">Skill Name <span class="text-error">*</span></span>
+      </label>
+      <input type="text" [(ngModel)]="requestSubject" placeholder="e.g. React Native, GoLang..." class="input input-bordered w-full bg-base-200/50 focus:bg-base-100 transition-colors" />
+      
+      <label class="label mt-4">
+        <span class="label-text font-semibold">Why should we add this? <span class="text-error">*</span></span>
+      </label>
+      <textarea [(ngModel)]="requestDescription" class="textarea textarea-bordered h-24 bg-base-200/50 focus:bg-base-100 transition-colors" placeholder="Briefly describe what this skill is or why it's important..."></textarea>
+    </div>
+
+    <div class="modal-action mt-8">
+      <form method="dialog" class="flex gap-4 w-full">
+        <button class="btn flex-1" (click)="closeRequestModal()">Cancel</button>
+        <button class="btn btn-primary flex-1" *ngIf="!requestSuccess" [disabled]="isSubmittingRequest" (click)="requestNewSkill()">
+          <span *ngIf="isSubmittingRequest" class="loading loading-spinner"></span>
+          Submit Request
+        </button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeRequestModal()">close</button>
+  </form>
+</dialog>

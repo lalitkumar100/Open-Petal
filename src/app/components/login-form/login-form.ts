@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../core/services/auth.service';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { StorageService } from '../../core/services/storage.service';
 
 @Component({
@@ -11,9 +10,10 @@ import { StorageService } from '../../core/services/storage.service';
   styleUrl: './login-form.css',
 })
 export class LoginForm {
-  private authService = inject(AuthService);
   private http = inject(HttpClient);
   private storage = inject(StorageService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   email = '';
   password = '';
@@ -21,6 +21,11 @@ export class LoginForm {
   
   errorMessage = '';
   isLoading = false;
+  showPassword = false;
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
 
   onSubmit() {
     this.errorMessage = '';
@@ -28,7 +33,7 @@ export class LoginForm {
     if (!this.email || !this.password) return;
     
     this.isLoading = true;
-    const url = `${environment.apiUrl}/${environment.apiVersion}/auth/login`;
+    const url = '/auth/login';
     this.http.post<any>(url, { email: this.email, password: this.password })
       .subscribe({
         next: (res) => {
@@ -44,7 +49,12 @@ export class LoginForm {
             };
             this.storage.setItem('user_profile', userProfile, this.rememberMe);
             
-            this.authService.redirectByRole(res.data.role);
+            const currentRole = res.data.role;
+            if (currentRole === 'ROLE_ADMIN' || currentRole?.includes('ADMIN')) {
+              this.router.navigate(['/admin/home']);
+            } else {
+              this.router.navigate(['/user/home']);
+            }
           } else {
             this.errorMessage = res.message || 'Login failed.';
           }

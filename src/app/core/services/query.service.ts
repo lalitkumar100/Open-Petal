@@ -30,7 +30,7 @@ export interface UserQuery {
   providedIn: 'root'
 })
 export class QueryService {
-  private apiUrl = `${environment.apiUrl}/queries`;
+  private apiUrl = '/queries';
 
   constructor(private http: HttpClient) { }
 
@@ -50,5 +50,13 @@ export class QueryService {
    */
   getQueryById(id: number): Observable<ApiResponse<UserQuery>> {
     return this.http.get<ApiResponse<UserQuery>>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Get all queries submitted by the current user.
+   * @returns An observable of the API response containing a list of queries
+   */
+  getUserQueries(): Observable<ApiResponse<UserQuery[]>> {
+    return this.http.get<ApiResponse<UserQuery[]>>(this.apiUrl);
   }
 }

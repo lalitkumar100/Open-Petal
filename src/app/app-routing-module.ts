@@ -14,7 +14,6 @@ import { UserHomePage } from './pages/user/user-home-page/user-home-page';
 import { SkillManagementPage } from './pages/admin/skill-management-page/skill-management-page';
 import { SkillCategoryPage } from './pages/admin/skill-category-page/skill-category-page';
 import { SkillCategoryDetailsPage } from './pages/admin/skill-category-details-page/skill-category-details-page';
-import { QueriesPage } from './pages/admin/queries-page/queries-page';
 import { UserPage } from './pages/admin/user-page/user-page';
 import { SessionPage as AdminSessionPage } from './pages/admin/session-page/session-page';
 import { AdminConflictsPage } from './pages/admin/admin-conflicts-page/admin-conflicts-page';

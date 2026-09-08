@@ -80,6 +80,11 @@ export class InboxPage implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  closeActiveChat(): void {
+    this.activeConversation = null;
+    this.stopPolling();
+  }
+
   loadMessages(connectionRequestId: number) {
     this.isLoadingMessages = true;
     this.chatService.getMessages(connectionRequestId).subscribe({

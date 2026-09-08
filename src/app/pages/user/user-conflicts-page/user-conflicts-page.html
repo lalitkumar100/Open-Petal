@@ -1,70 +1,202 @@
-<div class="p-8 max-w-6xl mx-auto">
+<div class="p-8 max-w-6xl mx-auto w-full">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">My Session Conflicts</h1>
+    <h1 class="text-3xl font-bold">Support & Conflicts</h1>
   </div>
 
-  <div *ngIf="isLoading" class="flex justify-center my-12">
-    <span class="loading loading-spinner loading-lg text-primary"></span>
+  <!-- Tabs -->
+  <div class="tabs tabs-boxed mb-6 bg-slate-100 p-1 w-fit">
+    <a class="tab" [ngClass]="{'tab-active': activeTab === 'conflicts'}" (click)="setActiveTab('conflicts')">Session Conflicts</a>
+    <a class="tab" [ngClass]="{'tab-active': activeTab === 'queries'}" (click)="setActiveTab('queries')">My Queries</a>
   </div>
 
-  <div *ngIf="error" class="alert alert-error mb-6">
-    <mat-icon>error</mat-icon>
-    <span>{{ error }}</span>
+  <!-- CONFLICTS TAB -->
+  <div *ngIf="activeTab === 'conflicts'">
+    <div *ngIf="isLoadingConflicts" class="flex justify-center my-12">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+
+    <div *ngIf="error && !isLoadingConflicts" class="alert alert-error mb-6">
+      <mat-icon>error</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <div *ngIf="!isLoadingConflicts && !error && conflicts.length === 0"
+      class="text-center text-slate-500 py-16 bg-white rounded-box shadow-sm border border-slate-100">
+      <mat-icon class="text-6xl mb-4 text-slate-300">verified</mat-icon>
+      <p class="text-xl font-medium">No conflicts found.</p>
+      <p class="text-sm mt-2">You haven't participated in any disputed sessions.</p>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-box shadow-sm border border-slate-100"
+      *ngIf="!isLoadingConflicts && conflicts.length > 0">
+      <table class="table w-full">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600">
+            <th>ID</th>
+            <th>Role</th>
+            <th>Partner</th>
+            <th>Skill</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Date Filed</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let conflict of conflicts" class="hover:bg-slate-50">
+            <td class="font-medium">#{{ conflict.conflictId }}</td>
+            <td>
+              <div class="badge"
+                [ngClass]="{'badge-primary': conflict.myRole === 'LEARNER', 'badge-secondary': conflict.myRole === 'MENTOR'}">
+                {{ conflict.myRole === 'LEARNER' ? 'Learning' : 'Teaching' }}
+              </div>
+            </td>
+            <td class="font-medium">{{ conflict.partnerName }}</td>
+            <td>{{ conflict.primarySkillName }}</td>
+            <td>
+              <span class="text-sm font-semibold text-slate-700">{{ conflict.reason }}</span>
+              <span class="text-xs text-slate-500 block mt-1" *ngIf="conflict.raisedByMe">Raised by you</span>
+              <span class="text-xs text-slate-500 block mt-1" *ngIf="!conflict.raisedByMe">Raised against you</span>
+            </td>
+            <td>
+              <div class="badge" [ngClass]="{
+                'badge-warning': conflict.status === 'OPEN',
+                'badge-info': conflict.status === 'IN_REVIEW',
+                'badge-success': conflict.status === 'RESOLVED'
+              }">
+                {{ conflict.status }}
+              </div>
+            </td>
+            <td class="text-sm text-slate-500">{{ conflict.createdAt | date:'short' }}</td>
+            <td>
+              <button class="btn btn-sm btn-outline" (click)="viewSession(conflict.sessionId)">View Session</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div *ngIf="!isLoading && !error && conflicts.length === 0"
-    class="text-center text-slate-500 py-16 bg-white rounded-box shadow-sm border border-slate-100">
-    <mat-icon class="text-6xl mb-4 text-slate-300">verified</mat-icon>
-    <p class="text-xl font-medium">No conflicts found.</p>
-    <p class="text-sm mt-2">You haven't participated in any disputed sessions.</p>
-  </div>
+  <!-- QUERIES TAB -->
+  <div *ngIf="activeTab === 'queries'">
+    <div *ngIf="isLoadingQueries" class="flex justify-center my-12">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
 
-  <div class="overflow-x-auto bg-white rounded-box shadow-sm border border-slate-100"
-    *ngIf="!isLoading && conflicts.length > 0">
-    <table class="table w-full">
-      <thead>
-        <tr class="bg-slate-50 text-slate-600">
-          <th>ID</th>
-          <th>Role</th>
-          <th>Partner</th>
-          <th>Skill</th>
-          <th>Reason</th>
-          <th>Status</th>
-          <th>Date Filed</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let conflict of conflicts" class="hover:bg-slate-50">
-          <td class="font-medium">#{{ conflict.conflictId }}</td>
-          <td>
-            <div class="badge"
-              [ngClass]="{'badge-primary': conflict.myRole === 'LEARNER', 'badge-secondary': conflict.myRole === 'MENTOR'}">
-              {{ conflict.myRole === 'LEARNER' ? 'Learning' : 'Teaching' }}
-            </div>
-          </td>
-          <td class="font-medium">{{ conflict.partnerName }}</td>
-          <td>{{ conflict.primarySkillName }}</td>
-          <td>
-            <span class="text-sm font-semibold text-slate-700">{{ conflict.reason }}</span>
-            <span class="text-xs text-slate-500 block mt-1" *ngIf="conflict.raisedByMe">Raised by you</span>
-            <span class="text-xs text-slate-500 block mt-1" *ngIf="!conflict.raisedByMe">Raised against you</span>
-          </td>
-          <td>
-            <div class="badge" [ngClass]="{
-              'badge-warning': conflict.status === 'OPEN',
-              'badge-info': conflict.status === 'IN_REVIEW',
-              'badge-success': conflict.status === 'RESOLVED'
-            }">
-              {{ conflict.status }}
-            </div>
-          </td>
-          <td class="text-sm text-slate-500">{{ conflict.createdAt | date:'short' }}</td>
-          <td>
-            <button class="btn btn-sm btn-outline" (click)="viewSession(conflict.sessionId)">View Session</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div *ngIf="error && !isLoadingQueries" class="alert alert-error mb-6">
+      <mat-icon>error</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <div *ngIf="!isLoadingQueries && !error && userQueries.length === 0"
+      class="text-center text-slate-500 py-16 bg-white rounded-box shadow-sm border border-slate-100">
+      <mat-icon class="text-6xl mb-4 text-slate-300">help_outline</mat-icon>
+      <p class="text-xl font-medium">No queries found.</p>
+      <p class="text-sm mt-2">You haven't submitted any support queries or skill requests.</p>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-box shadow-sm border border-slate-100"
+      *ngIf="!isLoadingQueries && userQueries.length > 0">
+      <table class="table w-full">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600">
+            <th>ID</th>
+            <th>Type</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Date Filed</th>
+            <th>Admin Response</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let query of userQueries" class="hover:bg-slate-50">
+            <td class="font-medium">#{{ query.id }}</td>
+            <td>
+              <div class="badge badge-outline">
+                {{ query.queryType }}
+              </div>
+            </td>
+            <td class="font-medium max-w-xs truncate" [title]="query.subject">{{ query.subject }}</td>
+            <td>
+              <div class="badge" [ngClass]="{
+                'badge-warning': query.status === 'PENDING',
+                'badge-info': query.status === 'IN_PROGRESS',
+                'badge-success': query.status === 'RESOLVED',
+                'badge-error': query.status === 'REJECTED'
+              }">
+                {{ query.status }}
+              </div>
+            </td>
+            <td class="text-sm text-slate-500">{{ query.createdAt | date:'short' }}</td>
+            <td class="max-w-xs truncate" [title]="query.adminResponse || 'Pending'">
+              <span *ngIf="query.adminResponse" class="text-slate-700">{{ query.adminResponse }}</span>
+              <span *ngIf="!query.adminResponse" class="text-slate-400 italic">Pending response...</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline" (click)="viewQueryDetails(query)">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
+
+<!-- Query Details Modal -->
+<dialog id="query_details_modal" class="modal">
+  <div class="modal-box max-w-2xl bg-white" *ngIf="selectedQuery">
+    <h3 class="font-bold text-2xl mb-4 text-slate-800 border-b pb-2">Query Details</h3>
+    
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div>
+        <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Query ID</p>
+        <p class="text-lg font-medium">#{{ selectedQuery.id }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Date Filed</p>
+        <p class="text-lg font-medium">{{ selectedQuery.createdAt | date:'medium' }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Type</p>
+        <div class="badge badge-outline mt-1">{{ selectedQuery.queryType }}</div>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Status</p>
+        <div class="badge mt-1" [ngClass]="{
+          'badge-warning': selectedQuery.status === 'PENDING',
+          'badge-info': selectedQuery.status === 'IN_PROGRESS',
+          'badge-success': selectedQuery.status === 'RESOLVED',
+          'badge-error': selectedQuery.status === 'REJECTED'
+        }">
+          {{ selectedQuery.status }}
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider mb-1">Subject</p>
+      <p class="text-lg font-medium text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-100">{{ selectedQuery.subject }}</p>
+    </div>
+
+    <div class="mb-6">
+      <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider mb-1">Description</p>
+      <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 text-slate-700 whitespace-pre-wrap min-h-[100px]">{{ selectedQuery.description }}</div>
+    </div>
+
+    <div class="mb-6" *ngIf="selectedQuery.adminResponse">
+      <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider mb-1">Admin Response</p>
+      <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-slate-800 whitespace-pre-wrap">
+        <mat-icon class="text-blue-500 align-middle mr-1 -mt-1 text-xl">admin_panel_settings</mat-icon>
+        {{ selectedQuery.adminResponse }}
+      </div>
+    </div>
+
+    <div class="modal-action">
+      <button class="btn btn-primary" (click)="closeQueryModal()">Close</button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeQueryModal()">close</button>
+  </form>
+</dialog>

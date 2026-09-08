@@ -1,8 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-register-form',
@@ -11,9 +9,9 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './register-form.css',
 })
 export class RegisterForm {
-  private authService = inject(AuthService);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   firstName = '';
   lastName = '';
@@ -42,6 +40,40 @@ export class RegisterForm {
     this.errorMessage = '';
     this.successMessage = '';
 
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(this.firstName) || !nameRegex.test(this.lastName)) {
+      this.errorMessage = 'Name must not contain numbers or special characters';
+      return;
+    }
+
+    if (!this.dob) {
+      this.errorMessage = 'Date of birth is required';
+      return;
+    }
+    const dobDate = new Date(this.dob);
+    const today = new Date();
+    let age = today.getFullYear() - dobDate.getFullYear();
+    const m = today.getMonth() - dobDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+      age--;
+    }
+    if (age < 18) {
+      this.errorMessage = 'You must be at least 18 years old to register';
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'Please enter a valid email address';
+      return;
+    }
+
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (!passwordRegex.test(this.password)) {
+      this.errorMessage = 'Password must be more than 8 characters, including number, lowercase letter, uppercase letter';
+      return;
+    }
+
     if (this.password !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match';
       return;
@@ -62,7 +94,7 @@ export class RegisterForm {
       dob: this.dob
     };
 
-    const url = `${environment.apiUrl}/${environment.apiVersion}/auth/register`;
+    const url = '/auth/register';
     this.http.post<any>(url, payload).subscribe({
       next: (res) => {
         this.isLoading = false;

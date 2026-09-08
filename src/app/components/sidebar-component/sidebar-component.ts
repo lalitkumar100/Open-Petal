@@ -43,7 +43,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   adminMenuItems = [
     { label: 'Skill Management', icon: 'model_training', path: '/admin/skill-management' },
-    { label: 'Queries', icon: 'question_answer', path: '/admin/queries' },
+    { label: 'Support & Conflicts', icon: 'question_answer', path: '/admin/queries' },
     { label: 'User', icon: 'group', path: '/admin/user' },
     { label: 'Session', icon: 'history', path: '/admin/session' },
     { label: 'Locations', icon: 'location_on', path: '/admin/locations' },

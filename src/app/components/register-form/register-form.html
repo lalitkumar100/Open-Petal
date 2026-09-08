@@ -5,7 +5,7 @@
     <h1 class="font-display-lg text-[32px] leading-tight text-tertiary-fixed font-bold tracking-tight text-center">Create Account</h1>
     <p class="font-body-md text-body-md text-secondary-fixed-dim mt-2 text-center">Join Open Petal today.</p>
   </div>
-  <form class="flex flex-col w-full space-y-1 mt-2" (ngSubmit)="onSubmit()">
+  <form #registerForm="ngForm" class="flex flex-col w-full space-y-1 mt-2" (ngSubmit)="registerForm.form.valid && onSubmit()">
     <!-- Messages -->
     <div *ngIf="errorMessage" class="text-sm text-error bg-error/10 p-2 rounded mb-2 border border-error/20">{{ errorMessage }}</div>
     <div *ngIf="successMessage" class="text-sm text-success bg-success/10 p-2 rounded mb-2 border border-success/20">{{ successMessage }}</div>
@@ -92,7 +92,7 @@
     
     <!-- Actions -->
     <div class="pt-2">
-      <button class="btn btn-primary w-full !rounded-none !h-12 text-[16px] glow-effect" type="submit" [disabled]="isLoading">
+      <button class="btn btn-primary w-full !rounded-none !h-12 text-[16px] glow-effect" type="submit" [disabled]="isLoading || registerForm.invalid">
         <span *ngIf="isLoading" class="loading loading-spinner"></span>
         {{ isLoading ? 'Registering...' : 'Register' }}
       </button>

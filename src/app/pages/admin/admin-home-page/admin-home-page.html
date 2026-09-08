@@ -1,21 +1,82 @@
-<div class="p-6">
-  <h1 class="text-3xl font-bold text-slate-800 mb-2">Admin Dashboard</h1>
-  <p class="text-slate-500 mb-6">Welcome back, Administrator. Here's an overview of the system.</p>
-  
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
-      <h3 class="text-lg font-bold text-slate-700">Total Users</h3>
-      <p class="text-4xl font-extrabold text-[#0e8ca5] mt-2">1,245</p>
+<div class="p-8 max-w-7xl mx-auto">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
+      <p class="text-slate-500 mt-1">Platform overview and statistics</p>
     </div>
-    <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
-      <h3 class="text-lg font-bold text-slate-700">Active Sessions</h3>
-      <p class="text-4xl font-extrabold text-[#0e8ca5] mt-2">84</p>
+    <button class="btn btn-primary" (click)="fetchStats()" [disabled]="isLoading">
+      <mat-icon [class.animate-spin]="isLoading">refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center my-12">
+    <app-loader [isLoading]="isLoading" mode="flow" size="w-32 h-32"></app-loader>
+  </div>
+
+  <div *ngIf="error && !isLoading" class="alert alert-error">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <div *ngIf="stats && !isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Users Stats -->
+    <div class="stats shadow border border-slate-100 bg-white">
+      <div class="stat">
+        <div class="stat-figure text-primary">
+          <mat-icon class="text-4xl">group</mat-icon>
+        </div>
+        <div class="stat-title text-slate-500 font-semibold tracking-wider text-xs uppercase">Total Users</div>
+        <div class="stat-value text-slate-800">{{ stats.totalUsers }}</div>
+        <div class="stat-desc text-green-600 font-medium flex items-center mt-1">
+          <mat-icon class="text-sm mr-1">trending_up</mat-icon>
+          {{ stats.newUsers24h }} new (24h)
+        </div>
+      </div>
     </div>
-    <div class="card bg-base-100 border border-slate-200 shadow-sm p-6 !rounded-none">
-      <h3 class="text-lg font-bold text-slate-700">System Status</h3>
-      <p class="text-2xl font-bold text-green-500 mt-2 flex items-center">
-        <mat-icon class="mr-1">check_circle</mat-icon> Healthy
-      </p>
+
+    <!-- Skills Stats -->
+    <div class="stats shadow border border-slate-100 bg-white">
+      <div class="stat">
+        <div class="stat-figure text-secondary">
+          <mat-icon class="text-4xl">psychology</mat-icon>
+        </div>
+        <div class="stat-title text-slate-500 font-semibold tracking-wider text-xs uppercase">Total Skills</div>
+        <div class="stat-value text-slate-800">{{ stats.totalSkills }}</div>
+        <div class="stat-desc text-slate-500 font-medium mt-1">
+          Across {{ stats.totalSkillCategories }} categories
+        </div>
+      </div>
+    </div>
+
+    <!-- Sessions Stats -->
+    <div class="stats shadow border border-slate-100 bg-white">
+      <div class="stat">
+        <div class="stat-figure text-accent">
+          <mat-icon class="text-4xl">video_camera_front</mat-icon>
+        </div>
+        <div class="stat-title text-slate-500 font-semibold tracking-wider text-xs uppercase">Total Sessions</div>
+        <div class="stat-value text-slate-800">{{ stats.totalSessions }}</div>
+        <div class="stat-desc text-green-600 font-medium flex items-center mt-1">
+          <mat-icon class="text-sm mr-1">add_circle</mat-icon>
+          {{ stats.sessions24h }} new (24h)
+        </div>
+      </div>
+    </div>
+
+    <!-- Support Stats -->
+    <div class="stats shadow border border-slate-100 bg-white">
+      <div class="stat">
+        <div class="stat-figure text-error">
+          <mat-icon class="text-4xl">gavel</mat-icon>
+        </div>
+        <div class="stat-title text-slate-500 font-semibold tracking-wider text-xs uppercase">Conflicts</div>
+        <div class="stat-value text-slate-800">{{ stats.totalConflicts }}</div>
+        <div class="stat-desc text-orange-500 font-medium flex items-center mt-1">
+          <mat-icon class="text-sm mr-1">support_agent</mat-icon>
+          {{ stats.newQueries24h }} queries (24h)
+        </div>
+      </div>
     </div>
   </div>
 </div>

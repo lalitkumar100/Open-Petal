@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing-module';
 import { MatIconModule } from '@angular/material/icon';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
-import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { apiInterceptor } from './core/interceptors/api.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChatPanelComponent } from './components/chat-panel/chat-panel.component';
 
@@ -30,7 +30,6 @@ import { SkillCategoryPage } from './pages/admin/skill-category-page/skill-categ
 import { SkillCategoryDetailsPage } from './pages/admin/skill-category-details-page/skill-category-details-page';
 import { AddSkillCategoryDialog } from './components/add-skill-category-dialog/add-skill-category-dialog';
 import { AddSkillDialog } from './components/add-skill-dialog/add-skill-dialog';
-import { QueriesPage } from './pages/admin/queries-page/queries-page';
 import { UserPage } from './pages/admin/user-page/user-page';
 import { AdminUserDetailsPage } from './pages/admin/user-details-page/user-details-page';
 import { SessionPage as AdminSessionPage } from './pages/admin/session-page/session-page';
@@ -75,7 +74,6 @@ import { RoadmapDialogComponent } from './components/roadmap-dialog/roadmap-dial
     SkillCategoryDetailsPage,
     AddSkillCategoryDialog,
     AddSkillDialog,
-    QueriesPage,
     UserPage,
     AdminUserDetailsPage,
     AdminSessionPage,
@@ -97,7 +95,7 @@ import { RoadmapDialogComponent } from './components/roadmap-dialog/roadmap-dial
     RoadmapDialogComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, MatIconModule, FormsModule, ReactiveFormsModule, ChatPanelComponent],
-  providers: [provideHttpClient(withInterceptors([authInterceptor])), provideMarkdown()],
+  providers: [provideHttpClient(withInterceptors([apiInterceptor])), provideMarkdown()],
   bootstrap: [App],
 })
 export class AppModule { }

@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserSkillService } from '../../../core/services/user-skill.service';
 import { SystemSkill, UserSkill, LearningGoal, SkillLevel, TeachingMode } from '../../../core/models/user-skill.model';
+import { QueryService } from '../../../core/services/query.service';
 
 @Component({
   selector: 'app-user-home-page',
@@ -34,7 +35,8 @@ export class UserHomePage implements OnInit {
   constructor(
     private userSkillService: UserSkillService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private queryService: QueryService
   ) {
     this.addSkillForm = this.fb.group({
       skillId: ['', Validators.required],
@@ -221,5 +223,62 @@ export class UserHomePage implements OnInit {
         this.loadLearningGoals();
       });
     }
+  }
+
+  // Request Skill Modal State
+  requestSubject: string = '';
+  requestDescription: string = '';
+  isSubmittingRequest: boolean = false;
+  requestError: string | null = null;
+  requestSuccess: boolean = false;
+
+  openRequestModal() {
+    this.requestSubject = '';
+    this.requestDescription = '';
+    this.requestError = null;
+    this.requestSuccess = false;
+    const modal = document.getElementById('request_skill_modal') as HTMLDialogElement;
+    if (modal) modal.showModal();
+  }
+
+  closeRequestModal() {
+    const modal = document.getElementById('request_skill_modal') as HTMLDialogElement;
+    if (modal) modal.close();
+  }
+
+  requestNewSkill() {
+    if (!this.requestSubject.trim() || !this.requestDescription.trim()) {
+      this.requestError = 'Please provide both a skill name and a description.';
+      return;
+    }
+
+    this.isSubmittingRequest = true;
+    this.requestError = null;
+    this.cdr.detectChanges();
+
+    this.queryService.submitQuery({
+      queryType: 'ADD_NEW_SKILL',
+      subject: this.requestSubject,
+      description: this.requestDescription
+    }).subscribe({
+      next: (res) => {
+        this.isSubmittingRequest = false;
+        if (res.success) {
+          this.requestSuccess = true;
+          // Close after 2 seconds
+          setTimeout(() => {
+            this.closeRequestModal();
+          }, 2000);
+        } else {
+          this.requestError = res.message || 'Failed to submit request.';
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isSubmittingRequest = false;
+        this.requestError = err.error?.message || 'Error submitting request. Please try again.';
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
