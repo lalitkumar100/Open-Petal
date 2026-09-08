@@ -1,19 +1,54 @@
-<div class="drawer lg:drawer-open" data-theme="openpetal-light">
-    <input id="my-drawer-4" type="checkbox" class="drawer-toggle inline" />
-    
-    <div class="drawer-content flex flex-col h-screen">
-        <!-- Navbar / Breadcrumb Component -->
-        <app-breadcrumb-component></app-breadcrumb-component>
+<div class="drawer drawer-end" data-theme="openpetal-light">
+  <input id="chat-drawer" type="checkbox" class="drawer-toggle" [checked]="isAiPanelOpen" (change)="isAiPanelOpen = !isAiPanelOpen" />
+  
+  <div class="drawer-content flex flex-col h-screen">
+    <!-- Existing Left Sidebar Drawer -->
+    <div class="drawer lg:drawer-open h-full">
+        <input id="my-drawer-4" type="checkbox" class="drawer-toggle inline" />
         
-        <!-- Page content here -->
-        <main class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
-            <app-main-area-component></app-main-area-component>
-        </main>
-    </div>
+        <div class="drawer-content flex flex-col h-full">
+            <!-- Navbar / Breadcrumb Component -->
+            <app-breadcrumb-component></app-breadcrumb-component>
+            
+            <!-- Page content here -->
+            <main class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
+                <app-main-area-component></app-main-area-component>
+            </main>
+        </div>
 
-    <!-- Sidebar Component Wrapper -->
-    <div class="drawer-side is-drawer-close:overflow-visible z-20">
-        <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-        <app-sidebar-component class="h-full"></app-sidebar-component>
+        <!-- Sidebar Component Wrapper -->
+        <div class="drawer-side is-drawer-close:overflow-visible z-20">
+            <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+            <app-sidebar-component class="h-full"></app-sidebar-component>
+        </div>
     </div>
+  </div>
+
+  <!-- Right Drawer for AI Chat -->
+  <div class="drawer-side z-50">
+    <label for="chat-drawer" aria-label="close chat" class="drawer-overlay"></label>
+    <div class="bg-base-100 min-h-full w-80 sm:w-96 flex flex-col overflow-hidden shadow-2xl">
+      <!-- Header -->
+      <div class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md z-10 shrink-0">
+          <h3 class="font-bold flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+            </svg>
+            Open Petal AI
+          </h3>
+          <button (click)="isAiPanelOpen = false" class="text-white hover:text-gray-200 font-bold p-1">✕</button>
+      </div>
+      <!-- Chat component -->
+      <div class="flex-1 overflow-hidden relative bg-white">
+          <app-chat-panel class="absolute inset-0 h-full w-full"></app-chat-panel>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Floating AI Button -->
+<button (click)="isAiPanelOpen = true" class="btn btn-circle bg-blue-600 hover:bg-blue-700 text-white fixed bottom-6 right-6 z-40 shadow-lg border-none" aria-label="Open AI Chat">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    </svg>
+</button>

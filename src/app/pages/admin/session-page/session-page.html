@@ -2,7 +2,7 @@
   <h1 class="text-3xl font-bold mb-6">Platform Sessions</h1>
   
   <div *ngIf="isLoading" class="flex justify-center my-8">
-    <span class="loading loading-spinner loading-lg text-primary"></span>
+    <app-loader [isLoading]="isLoading" mode="flow" size="w-32 h-32"></app-loader>
   </div>
 
   <div *ngIf="!isLoading && sessions.length === 0" class="text-center text-slate-500 py-10">

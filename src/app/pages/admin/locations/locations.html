@@ -8,9 +8,11 @@
   </div>
 
   <!-- Main Content Area -->
-  <div class="flex-1 bg-base-100 rounded-lg shadow-sm border border-base-200 p-4 flex flex-col overflow-hidden">
+  <div class="flex-1 bg-base-100 rounded-lg shadow-sm border border-base-200 p-4 flex flex-col overflow-hidden relative">
+    <app-loader [isLoading]="isLoading" mode="page"></app-loader>
+    
     <!-- Table Container -->
-    <div class="flex-1 overflow-x-auto">
+    <div class="flex-1 overflow-x-auto" *ngIf="!isLoading">
       <table class="table w-full table-zebra table-pin-rows">
         <thead>
           <tr>

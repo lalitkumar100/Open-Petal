@@ -7,7 +7,7 @@
   </div>
 
   <div *ngIf="isLoadingDetails" class="flex justify-center py-12">
-    <span class="loading loading-spinner loading-lg text-primary"></span>
+    <app-loader [isLoading]="isLoadingDetails" mode="flow" size="w-32 h-32"></app-loader>
   </div>
 
   <div *ngIf="resolveError" class="alert alert-error mb-6">

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
+import { QueryService } from '../../../core/services/query.service';
 
 export interface SkillBadge {
   id?: number;
@@ -36,6 +37,14 @@ export class SearchPage implements OnInit {
   error: string | null = null;
   loggedInUserId: number | null = null;
   private authService = inject(AuthService);
+  private queryService = inject(QueryService);
+
+  // Request Skill Modal State
+  requestSubject: string = '';
+  requestDescription: string = '';
+  isSubmittingRequest: boolean = false;
+  requestError: string | null = null;
+  requestSuccess: boolean = false;
 
   ngOnInit() {
     const user = this.authService.getUser();
@@ -91,4 +100,55 @@ export class SearchPage implements OnInit {
     const hue = Math.abs(hash % 360);
     return `hsl(${hue}, 70%, 40%)`;
   }
+
+  openRequestModal() {
+    this.requestSubject = '';
+    this.requestDescription = '';
+    this.requestError = null;
+    this.requestSuccess = false;
+    const modal = document.getElementById('request_skill_modal') as HTMLDialogElement;
+    if (modal) modal.showModal();
+  }
+
+  closeRequestModal() {
+    const modal = document.getElementById('request_skill_modal') as HTMLDialogElement;
+    if (modal) modal.close();
+  }
+
+  requestNewSkill() {
+    if (!this.requestSubject.trim() || !this.requestDescription.trim()) {
+      this.requestError = 'Please provide both a skill name and a description.';
+      return;
+    }
+
+    this.isSubmittingRequest = true;
+    this.requestError = null;
+    this.cdr.detectChanges();
+
+    this.queryService.submitQuery({
+      queryType: 'ADD_NEW_SKILL',
+      subject: this.requestSubject,
+      description: this.requestDescription
+    }).subscribe({
+      next: (res) => {
+        this.isSubmittingRequest = false;
+        if (res.success) {
+          this.requestSuccess = true;
+          // Close after 2 seconds
+          setTimeout(() => {
+            this.closeRequestModal();
+          }, 2000);
+        } else {
+          this.requestError = res.message || 'Failed to submit request.';
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isSubmittingRequest = false;
+        this.requestError = err.error?.message || 'Error submitting request. Please try again.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }
+

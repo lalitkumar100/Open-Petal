@@ -3,9 +3,11 @@
     <h1 class="text-3xl font-bold text-base-content">User Page</h1>
   </div>
 
-  <div class="bg-base-100 rounded-box shadow-md p-6 flex-1">
+  <div class="bg-base-100 rounded-box shadow-md p-6 flex-1 relative">
+    <app-loader [isLoading]="isLoading" mode="page"></app-loader>
+    
     <!-- Controls -->
-    <div class="flex flex-wrap gap-4 mb-6">
+    <div class="flex flex-wrap gap-4 mb-6" *ngIf="!isLoading">
       <select class="select select-bordered w-full max-w-xs" [(ngModel)]="searchType">
         <option value="userId">User ID</option>
         <option value="name">Full Name</option>
@@ -27,7 +29,7 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto border border-base-300 rounded-lg">
+    <div class="overflow-x-auto border border-base-300 rounded-lg" *ngIf="!isLoading">
       <table class="table w-full">
         <thead class="bg-base-200">
           <tr>
@@ -60,7 +62,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex flex-wrap justify-between items-center mt-6">
+    <div class="flex flex-wrap justify-between items-center mt-6" *ngIf="!isLoading && users.length > 0">
       <div class="text-sm text-base-content/70">
         Showing {{ startIndex }} to {{ endIndex }} of {{ totalRecords }} entries
       </div>

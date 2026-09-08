@@ -24,8 +24,12 @@ export class UserHomePage implements OnInit {
   isAddSkillModalOpen = false;
   isAddGoalModalOpen = false;
   isDeleteModalOpen = false;
+  isRoadmapModalOpen = false;
 
   itemToDelete: { type: 'TEACH' | 'GOAL', id: number } | null = null;
+  selectedGoalId: number | null = null;
+  selectedRoadmapData: any = null;
+  selectedGoalTitle: string = 'Learning Roadmap';
 
   constructor(
     private userSkillService: UserSkillService,
@@ -177,6 +181,30 @@ export class UserHomePage implements OnInit {
   closeDeleteModal() {
     this.isDeleteModalOpen = false;
     this.itemToDelete = null;
+  }
+
+  openRoadmapModal(goal: LearningGoal) {
+    this.selectedGoalId = goal.id;
+    this.selectedRoadmapData = goal.roadplan || null;
+    this.selectedGoalTitle = `Roadmap: ${goal.skillName}`;
+    this.isRoadmapModalOpen = true;
+  }
+
+  closeRoadmapModal() {
+    this.isRoadmapModalOpen = false;
+    this.selectedGoalId = null;
+    this.selectedRoadmapData = null;
+  }
+
+  onRoadmapUpdated(updatedRoadmap: any) {
+    if (this.selectedGoalId) {
+      const goal = this.learningGoals.find(g => g.id === this.selectedGoalId);
+      if (goal) {
+        goal.roadplan = updatedRoadmap;
+        this.selectedRoadmapData = updatedRoadmap;
+        this.cdr.detectChanges();
+      }
+    }
   }
 
   confirmDelete() {

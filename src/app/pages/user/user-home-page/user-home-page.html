@@ -116,9 +116,14 @@
                   </span>
                 </td>
                 <td class="text-center">
-                  <button class="btn btn-ghost btn-sm text-error" (click)="openDeleteModal('GOAL', goal.id)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  <div class="flex items-center justify-center gap-1">
+                    <button class="btn btn-ghost btn-sm text-primary" (click)="openRoadmapModal(goal)">
+                      <mat-icon>map</mat-icon>
+                    </button>
+                    <button class="btn btn-ghost btn-sm text-error" (click)="openDeleteModal('GOAL', goal.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </td>
               </tr>
               <tr *ngIf="learningGoals.length === 0">
@@ -293,3 +298,13 @@
     <button (click)="closeDeleteModal()">close</button>
   </form>
 </dialog>
+
+<!-- 4. Roadmap Dialog Component -->
+<app-roadmap-dialog
+  [isOpen]="isRoadmapModalOpen"
+  [goalId]="selectedGoalId"
+  [roadmap]="selectedRoadmapData"
+  [goalTitle]="selectedGoalTitle"
+  (close)="closeRoadmapModal()"
+  (roadmapUpdated)="onRoadmapUpdated($event)">
+</app-roadmap-dialog>

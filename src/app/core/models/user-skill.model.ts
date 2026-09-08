@@ -30,6 +30,7 @@ export interface LearningGoal {
   skillName: string;
   currentLevel: SkillLevel;
   targetLevel: SkillLevel;
+  roadplan?: RoadmapData;
 }
 
 export interface AddUserSkillRequest {
@@ -44,4 +45,32 @@ export interface AddLearningGoalRequest {
   skillId: number;
   currentLevel: SkillLevel;
   targetLevel: SkillLevel;
+}
+
+export interface RoadmapResource {
+  label: string;
+  url: string;
+}
+
+export interface RoadmapNode {
+  id: string;
+  title: string;
+  desc: string;
+  completed?: boolean;
+  resources?: RoadmapResource[];
+}
+
+export interface RoadmapMilestone {
+  id: string;
+  step: string;
+  title: string;
+  desc: string;
+  nodes: RoadmapNode[];
+  checkpoint: string;
+}
+
+export interface RoadmapData {
+  title: string;
+  subtitle: string;
+  milestones: RoadmapMilestone[];
 }

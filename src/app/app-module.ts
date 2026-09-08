@@ -3,8 +3,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing-module';
 import { MatIconModule } from '@angular/material/icon';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideMarkdown } from 'ngx-markdown';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChatPanelComponent } from './components/chat-panel/chat-panel.component';
 
 import { App } from './app';
 import { RegisterPage } from './pages/register-page/register-page';
@@ -47,6 +49,7 @@ import { UnauthorizedDialog } from './components/unauthorized-dialog/unauthorize
 import { Locations } from './pages/admin/locations/locations';
 import { ServerDownDialog } from './components/server-down-dialog/server-down-dialog';
 import { UserDetailsPage as UserSideDetailsPage } from './pages/user/user-details-page/user-details-page';
+import { RoadmapDialogComponent } from './components/roadmap-dialog/roadmap-dialog.component';
 
 @NgModule({
   declarations: [
@@ -91,9 +94,10 @@ import { UserDetailsPage as UserSideDetailsPage } from './pages/user/user-detail
     Locations,
     ServerDownDialog,
     UserSideDetailsPage,
+    RoadmapDialogComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, MatIconModule, FormsModule, ReactiveFormsModule],
-  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+  imports: [BrowserModule, AppRoutingModule, MatIconModule, FormsModule, ReactiveFormsModule, ChatPanelComponent],
+  providers: [provideHttpClient(withInterceptors([authInterceptor])), provideMarkdown()],
   bootstrap: [App],
 })
 export class AppModule { }

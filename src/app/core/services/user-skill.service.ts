@@ -52,4 +52,12 @@ export class UserSkillService {
   deleteLearningGoal(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/user/skills/learn/${id}`);
   }
+
+  generateRoadmap(goalId: number): Observable<ApiResponse<LearningGoal>> {
+    return this.http.post<ApiResponse<LearningGoal>>(`${environment.apiUrl}/${environment.apiVersion}/learning-goals/${goalId}/roadplan/generate`, {});
+  }
+
+  updateRoadmapProgress(goalId: number, roadmap: any): Observable<ApiResponse<LearningGoal>> {
+    return this.http.patch<ApiResponse<LearningGoal>>(`${environment.apiUrl}/${environment.apiVersion}/learning-goals/${goalId}/roadplan`, roadmap);
+  }
 }

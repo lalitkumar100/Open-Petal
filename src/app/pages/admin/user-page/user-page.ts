@@ -30,6 +30,7 @@ export class UserPage implements OnInit {
   private router = inject(Router);
   
   users: User[] = [];
+  isLoading: boolean = true;
   
   searchType: string = 'name';
   searchQuery: string = '';
@@ -56,6 +57,7 @@ export class UserPage implements OnInit {
   }
 
   loadUsers() {
+    this.isLoading = true;
     // Determine sort parameters based on sortOption
     let sortBy = 'firstName';
     let sortDir = 'asc';
@@ -102,11 +104,13 @@ export class UserPage implements OnInit {
            this.users = response.content || response;
            this.totalRecords = response.totalElements || this.users.length;
         }
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.warn('Backend API not yet ready or failed, using demo fallback data.', err);
         this.loadDemoData();
+        this.isLoading = false;
         this.cdr.detectChanges();
       }
     });

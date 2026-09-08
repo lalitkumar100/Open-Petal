@@ -9,7 +9,7 @@
   <!-- Header Section -->
   <div class="bg-base-100 rounded-box shadow-md p-6 mb-6">
     <div *ngIf="isLoadingCategory" class="flex items-center justify-center py-6">
-      <span class="loading loading-spinner loading-md text-primary"></span>
+      <app-loader [isLoading]="isLoadingCategory" mode="flow" size="w-32 h-32"></app-loader>
     </div>
 
     <div *ngIf="!isLoadingCategory && category">
@@ -43,7 +43,7 @@
     <!-- Loading overlay -->
     <div class="absolute inset-0 bg-base-100/50 z-10 flex items-center justify-center"
       *ngIf="isLoadingSkills && skills.length > 0">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <app-loader [isLoading]="true" mode="flow" size="w-32 h-32"></app-loader>
     </div>
 
     <div class="flex-1 flex items-center justify-center py-12" *ngIf="isLoadingSkills && skills.length === 0">

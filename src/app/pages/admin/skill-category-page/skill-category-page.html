@@ -18,11 +18,11 @@
   <div class="bg-base-100 rounded-box shadow-md p-6 flex-1 relative">
     <!-- Loading overlay -->
     <div class="absolute inset-0 bg-base-100/50 z-10 flex items-center justify-center" *ngIf="isLoading && categories.length > 0">
-      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <app-loader [isLoading]="true" mode="flow" size="w-32 h-32"></app-loader>
     </div>
     
     <div class="flex-1 flex items-center justify-center py-12" *ngIf="isLoading && categories.length === 0">
-      <app-loader mode="page"></app-loader>
+      <app-loader [isLoading]="true" mode="page"></app-loader>
     </div>
 
     <!-- Table -->

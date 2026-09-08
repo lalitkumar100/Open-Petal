@@ -10,6 +10,7 @@ import { LocationService, LocationResponse } from '../../../core/services/locati
 })
 export class Locations implements OnInit {
   locations: LocationResponse[] = [];
+  isLoading: boolean = true;
   currentPage: number = 1;
   pageSize: number = 25;
   
@@ -42,13 +43,16 @@ export class Locations implements OnInit {
   }
 
   loadLocations(): void {
+    this.isLoading = true;
     this.locationService.getAllLocations().subscribe({
       next: (data) => {
         this.locations = data;
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Failed to load locations';
+        this.isLoading = false;
         console.error(err);
         this.cdr.detectChanges();
       }
