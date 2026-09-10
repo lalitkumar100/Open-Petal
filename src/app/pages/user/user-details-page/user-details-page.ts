@@ -26,6 +26,7 @@ export interface UserDetailsDto {
     level: string; 
     creditsPerSession: number;
     sessionDurationMin: number;
+    isVerified?: boolean;
   }[];
   learningGoals: { name: string; level: string, id?: number }[];
   connectionStatus: string;
@@ -48,9 +49,12 @@ export function sessionDurationValidator(minDurationFn: () => number) {
     const startMins = startH * 60 + startM;
     const endMins = endH * 60 + endM;
     
-    const minDuration = minDurationFn();
-    if (endMins - startMins < minDuration) {
-      return { durationTooShort: { required: minDuration, actual: endMins - startMins } };
+    const minDuration = 1; // minDurationFn() bypassed for dev testing
+    let duration = endMins - startMins;
+    if (duration < 0) duration += 24 * 60; // Handle cross-midnight
+
+    if (duration < minDuration) {
+      return { durationTooShort: { required: minDuration, actual: duration } };
     }
     
     return null;

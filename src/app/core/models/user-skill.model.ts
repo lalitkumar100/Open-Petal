@@ -19,10 +19,13 @@ export interface SystemSkill {
 
 export interface UserSkill {
   id: number;
+  skillId?: number;
   skillName: string;
   level: SkillLevel;
   rating: number;
   peopleTaught: number;
+  isVerified?: boolean;
+  testMarks?: number;
 }
 
 export interface LearningGoal {

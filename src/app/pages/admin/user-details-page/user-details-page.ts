@@ -14,7 +14,7 @@ export interface AdminUserDetailsDto {
     role: string;
     createdAt: string;
   };
-  skillsOffered: { name: string; level: string }[];
+  skillsOffered: { name: string; level: string; isVerified?: boolean }[];
   learningGoals: { name: string; level: string }[];
 }
 
@@ -66,11 +66,24 @@ export class AdminUserDetailsPage implements OnInit {
     });
   }
 
-  goBack() {
-    this.router.navigate(['/admin/user']);
+  getInitials(firstName: string, lastName: string): string {
+    const f = firstName ? firstName.trim().charAt(0) : '';
+    const l = lastName ? lastName.trim().charAt(0) : '';
+    const initials = (f + l).toUpperCase();
+    return initials || '??';
   }
 
-  goToInbox() {
-    this.router.navigate(['/user/inbox']);
+  getAvatarColor(firstName: string, lastName: string): string {
+    const name = `${firstName || ''} ${lastName || ''}`;
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 70%, 40%)`;
+  }
+
+  goBack() {
+    window.history.back();
   }
 }

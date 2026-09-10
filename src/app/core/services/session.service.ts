@@ -31,6 +31,8 @@ export interface SessionDetailResponse extends SessionSummaryResponse {
   mentorVerifiedStart: boolean;
   learnerVerifiedEnd: boolean;
   mentorVerifiedEnd: boolean;
+
+  myRating?: number;
 }
 
 @Injectable({
@@ -85,5 +87,9 @@ export class SessionService {
 
   submitConflictStory(sessionId: number, story: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${sessionId}/conflict/story`, { story });
+  }
+
+  submitFeedback(sessionId: number, rating: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${sessionId}/feedback`, { rating });
   }
 }

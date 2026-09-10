@@ -1,4 +1,4 @@
-<div class="p-8 min-h-screen bg-base-200 relative">
+<div class="p-8 min-h-screen bg-white relative">
   <!-- Search Section -->
   <div class="flex flex-col items-center justify-center mb-12">
     <h1 class="text-4xl font-bold mb-6 text-primary">Discover Talents & Skills</h1>
@@ -56,8 +56,8 @@
   <!-- Cards Section -->
   <div *ngIf="!isLoading && usersList.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:grid-cols-5 gap-6">
     <div *ngFor="let user of usersList" 
-         class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative"
-         [ngClass]="{'bg-sky-50 border-2 border-sky-300': user.userId === loggedInUserId}">
+         class="card bg-sky-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative"
+         [ngClass]="{'bg-sky-200 border-2 border-sky-400': user.userId === loggedInUserId}">
       
       <!-- 'You' Badge -->
       <div *ngIf="user.userId === loggedInUserId" class="absolute top-2 right-2 badge badge-info badge-sm font-semibold">
@@ -88,9 +88,12 @@
 
           <!-- Tech/Offered Skills (Red) -->
           <div class="flex flex-wrap justify-center gap-2" *ngIf="user.techSkills.length > 0">
-            <span *ngFor="let skill of user.techSkills" class="badge badge-error gap-1 font-medium badge-sm sm:badge-md text-white">
+            <span *ngFor="let skill of user.techSkills" class="badge badge-error gap-1 font-medium badge-sm sm:badge-md text-white items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg> 
                 {{ skill.name }}
+                <svg *ngIf="skill.isVerified" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-emerald-300 ml-0.5 fill-current" viewBox="0 0 20 20" title="Verified Skill">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
             </span>
           </div>
         </div>
@@ -108,6 +111,15 @@
       </div>
     </div>
   </div>
-
-
+  <!-- Pagination -->
+  <div class="flex flex-wrap justify-between items-center mt-8 w-full max-w-6xl mx-auto" *ngIf="totalPages > 0">
+    <div class="text-sm text-base-content/70">
+      Showing {{ totalRecords === 0 ? 0 : currentPage * pageSize + 1 }} to {{ (currentPage + 1) * pageSize > totalRecords ? totalRecords : (currentPage + 1) * pageSize }} of {{ totalRecords }} entries
+    </div>
+    <div class="join">
+      <button class="join-item btn btn-sm" [disabled]="currentPage <= 0 || isLoading" (click)="changePage(-1)">Previous</button>
+      <button class="join-item btn btn-sm no-animation bg-base-200 pointer-events-none">Page {{ currentPage + 1 }} of {{ totalPages }}</button>
+      <button class="join-item btn btn-sm" [disabled]="currentPage >= totalPages - 1 || isLoading" (click)="changePage(1)">Next</button>
+    </div>
+  </div>
 </div>

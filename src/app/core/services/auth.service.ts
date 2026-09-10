@@ -60,6 +60,10 @@ export class AuthService {
     return this.storage.getItem<string>(this.TOKEN_KEY);
   }
 
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
   getUser(): Partial<UserData> | null {
     return this.storage.getItem<Partial<UserData>>(this.USER_KEY);
   }

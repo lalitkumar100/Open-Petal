@@ -1,0 +1,9 @@
+/* Sharp 0% border radius override and landing page styling */
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host * {
+  border-radius: 0px !important;
+}

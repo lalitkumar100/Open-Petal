@@ -29,8 +29,10 @@ import { SessionDetailsPage } from './pages/user/session-details-page/session-de
 import { UserConflictsPage } from './pages/user/user-conflicts-page/user-conflicts-page';
 import { InboxPage } from './pages/user/inbox-page/inbox-page';
 import { UserDetailsPage as UserSideDetailsPage } from './pages/user/user-details-page/user-details-page';
+import { LandingPage } from './pages/landing-page/landing-page';
 
 const routes: Routes = [
+  { path: '', component: LandingPage },
   { path: 'login', component: LoginPage },
   { path: 'register', component: RegisterPage },
   { path: 'forgot-password', component: ForgotPasswordPage },

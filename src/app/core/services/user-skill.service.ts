@@ -37,6 +37,10 @@ export class UserSkillService {
     );
   }
 
+  getLearningGoalById(goalId: number): Observable<ApiResponse<LearningGoal>> {
+    return this.http.get<ApiResponse<LearningGoal>>(`${this.apiUrl}/learning-goals/${goalId}`);
+  }
+
   addTeachSkill(data: AddUserSkillRequest): Observable<ApiResponse<UserSkill>> {
     return this.http.post<ApiResponse<UserSkill>>(`${this.apiUrl}/user/skills/teach`, data);
   }
@@ -51,6 +55,14 @@ export class UserSkillService {
 
   deleteLearningGoal(id: number): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/user/skills/learn/${id}`);
+  }
+
+  getVerificationQuestions(skillId: number): Observable<ApiResponse<string>> {
+    return this.http.get<ApiResponse<string>>(`${this.apiUrl}/user/skills/${skillId}/verify/questions`);
+  }
+
+  submitVerificationAnswers(skillId: number, answers: string[]): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/user/skills/${skillId}/verify/submit`, { answers });
   }
 
   generateRoadmap(goalId: number): Observable<ApiResponse<LearningGoal>> {

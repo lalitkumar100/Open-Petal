@@ -49,10 +49,12 @@ import { Locations } from './pages/admin/locations/locations';
 import { ServerDownDialog } from './components/server-down-dialog/server-down-dialog';
 import { UserDetailsPage as UserSideDetailsPage } from './pages/user/user-details-page/user-details-page';
 import { RoadmapDialogComponent } from './components/roadmap-dialog/roadmap-dialog.component';
+import { LandingPage } from './pages/landing-page/landing-page';
 
 @NgModule({
   declarations: [
     App,
+    LandingPage,
     RegisterPage,
     RegisterForm,
     LoginPage,

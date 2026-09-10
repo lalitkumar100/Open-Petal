@@ -353,4 +353,43 @@ export class SessionDetailsPage implements OnInit, OnDestroy {
       }
     });
   }
+  submitFeedbackRating: number = 0;
+  isSubmittingFeedback: boolean = false;
+  feedbackError: string = '';
+  feedbackSuccess: string = '';
+
+  get canLeaveFeedback(): boolean {
+    if (!this.session || this.session.status !== 'ENDED') return false;
+    if (this.session.myRating !== null && this.session.myRating !== undefined) return false;
+    if (this.session.sessionType === 'CREDIT' && this.session.role === 'MENTOR') return false;
+    return true;
+  }
+
+  setRating(val: number) {
+    this.submitFeedbackRating = val;
+  }
+
+  submitFeedback(): void {
+    if (this.submitFeedbackRating < 1 || this.submitFeedbackRating > 5) return;
+    this.isSubmittingFeedback = true;
+    this.feedbackError = '';
+    this.feedbackSuccess = '';
+    
+    this.sessionService.submitFeedback(this.sessionId, this.submitFeedbackRating).subscribe({
+      next: (res) => {
+        this.isSubmittingFeedback = false;
+        if (res.success) {
+          this.feedbackSuccess = 'Feedback submitted successfully.';
+          this.loadSession(); // refresh to get myRating
+          const modal = document.getElementById('feedback_modal') as HTMLDialogElement;
+          if (modal) modal.close();
+        }
+      },
+      error: (err) => {
+        this.isSubmittingFeedback = false;
+        this.feedbackError = err.error?.message || 'Failed to submit feedback.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }

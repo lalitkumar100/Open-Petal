@@ -1,29 +1,35 @@
 <div class="p-6">
-  <!-- Page Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
-    <div class="flex items-center gap-4">
-      <div class="avatar">
-        <div class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-          <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" />
-        </div>
-      </div>
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">John Doe</h1>
-        <p class="mt-1 text-sm text-slate-500">Member since 2023</p>
-      </div>
-    </div>
-    <!-- Action Button Group -->
-    <div class="flex flex-wrap items-center gap-3">
-      <button class="btn btn-outline btn-primary !rounded-none" (click)="goToInbox()">
-        <mat-icon class="mr-1">message</mat-icon> Message
-      </button>
-      <button class="btn btn-error !rounded-none text-white">
-        <mat-icon class="mr-1">block</mat-icon> Suspend User
-      </button>
-    </div>
+  <div class="mb-4">
+    <button class="btn btn-ghost btn-sm gap-2 pl-0" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back
+    </button>
+  </div>
+  
+  <div *ngIf="isLoading" class="flex justify-center my-12">
+    <app-loader [isLoading]="true" mode="flow" size="w-32 h-32"></app-loader>
+  </div>
+  
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
   </div>
 
-  <!-- Tables Container Stack -->
+  <ng-container *ngIf="userDetails">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
+      <div class="flex items-center gap-4">
+        <div class="avatar placeholder">
+          <div class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 flex items-center justify-center text-white"
+               [ngStyle]="{'background-color': getAvatarColor(userDetails.userInfo.firstName, userDetails.userInfo.lastName)}">
+            <span class="text-2xl font-bold">{{ getInitials(userDetails.userInfo.firstName, userDetails.userInfo.lastName) }}</span>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{{ userDetails.userInfo.firstName }} {{ userDetails.userInfo.lastName }}</h1>
+          <p class="mt-1 text-sm text-slate-500">Member since {{ userDetails.userInfo.createdAt | date:'mediumDate' }}</p>
+        </div>
+      </div>
+    </div>  <!-- Tables Container Stack -->
   <div class="mt-8 space-y-8">
     <!-- Skills They Can Teach Section -->
     <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none">
@@ -45,35 +51,30 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="hover">
-                <td class="font-semibold text-slate-900">React JS</td>
+              <tr class="hover" *ngFor="let skill of userDetails.skillsOffered">
+                <td class="font-semibold text-slate-900">
+                  <span class="inline-flex items-center gap-1.5">
+                    {{ skill.name }}
+                    <span *ngIf="skill.isVerified" class="badge badge-success badge-sm text-white font-semibold flex items-center gap-0.5" title="Verified Skill">
+                      <mat-icon class="text-[14px] w-[14px] h-[14px]">verified</mat-icon> Verified
+                    </span>
+                  </span>
+                </td>
                 <td>
                   <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-success">
-                    ADVANCED
+                    {{ skill.level }}
                   </span>
                 </td>
                 <td>
                   <span class="flex items-center text-slate-700">
                     <mat-icon class="text-amber-400 mr-1 text-[18px] w-[18px] h-[18px]">star</mat-icon>
-                    4.8
+                    5.0
                   </span>
                 </td>
-                <td class="text-slate-600">45</td>
+                <td class="text-slate-600">0</td>
               </tr>
-              <tr class="hover">
-                <td class="font-semibold text-slate-900">Node JS</td>
-                <td>
-                  <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-info">
-                    INTERMEDIATE
-                  </span>
-                </td>
-                <td>
-                  <span class="flex items-center text-slate-700">
-                    <mat-icon class="text-amber-400 mr-1 text-[18px] w-[18px] h-[18px]">star</mat-icon>
-                    4.2
-                  </span>
-                </td>
-                <td class="text-slate-600">12</td>
+              <tr *ngIf="!userDetails.skillsOffered.length">
+                <td colspan="4" class="text-center text-slate-500 py-4">No skills offered.</td>
               </tr>
             </tbody>
           </table>
@@ -98,8 +99,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="hover">
-                <td class="font-semibold text-slate-900">Python</td>
+              <tr class="hover" *ngFor="let goal of userDetails.learningGoals">
+                <td class="font-semibold text-slate-900">{{ goal.name }}</td>
                 <td>
                   <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-warning">
                     BEGINNER
@@ -107,9 +108,12 @@
                 </td>
                 <td>
                   <span class="badge badge-outline badge-sm font-semibold tracking-wider badge-info">
-                    INTERMEDIATE
+                    {{ goal.level }}
                   </span>
                 </td>
+              </tr>
+              <tr *ngIf="!userDetails.learningGoals.length">
+                <td colspan="3" class="text-center text-slate-500 py-4">No learning goals.</td>
               </tr>
             </tbody>
           </table>
@@ -117,4 +121,5 @@
       </div>
     </section>
   </div>
+  </ng-container>
 </div>

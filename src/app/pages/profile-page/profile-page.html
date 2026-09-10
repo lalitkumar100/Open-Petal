@@ -1,11 +1,15 @@
 <div class="max-w-5xl mx-auto pb-10">
   
-  <app-loader 
-    [isLoading]="isLoading || isSaving || isUpdatingPassword" 
-    mode="page" 
-    [message]="isLoading ? 'Loading Profile...' : (isSaving ? 'Saving Profile...' : 'Updating Password...')">
-  </app-loader>
+  <div *ngIf="isLoading || isSaving || isUpdatingPassword" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white">
+    <app-loader 
+      [isLoading]="true" 
+      mode="flow" 
+      size="w-48 h-48"
+      [message]="isLoading ? 'Loading Profile...' : (isSaving ? 'Saving Profile...' : 'Updating Password...')">
+    </app-loader>
+  </div>
 
+  <ng-container *ngIf="!isLoading && user">
   <!-- Page Header -->
   <div class="mb-6">
     <h1 class="font-display-lg text-[32px] leading-tight text-tertiary-fixed font-bold tracking-tight">My Profile</h1>
@@ -309,6 +313,7 @@
       </div>
     </form>
   </div>
+  </ng-container>
 </div>
 
 <!-- DaisyUI Confirmation Modal for Saving Profile -->

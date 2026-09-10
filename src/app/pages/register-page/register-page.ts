@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-register-page',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './register-page.html',
   styleUrl: './register-page.css',
 })
-export class RegisterPage {}
+export class RegisterPage {
+  constructor(private cdr: ChangeDetectorRef) {}
+}

@@ -58,6 +58,7 @@ export class LoginForm {
           } else {
             this.errorMessage = res.message || 'Login failed.';
           }
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.isLoading = false;
@@ -66,6 +67,7 @@ export class LoginForm {
           } else {
             this.errorMessage = err.error?.message || 'An error occurred during login.';
           }
+          this.cdr.detectChanges();
         }
       });
   }

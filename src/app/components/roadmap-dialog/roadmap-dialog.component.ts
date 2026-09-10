@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { UserSkillService } from '../../core/services/user-skill.service';
 import { RoadmapData, RoadmapNode } from '../../core/models/user-skill.model';
 
@@ -18,7 +18,7 @@ export class RoadmapDialogComponent implements OnChanges {
   isLoading: boolean = false;
   hasPlan: boolean = false;
 
-  constructor(private userSkillService: UserSkillService) {}
+  constructor(private userSkillService: UserSkillService, private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['roadmap']) {
@@ -41,10 +41,12 @@ export class RoadmapDialogComponent implements OnChanges {
           this.roadmap = response.data.roadplan as RoadmapData;
           this.hasPlan = true;
           this.roadmapUpdated.emit(this.roadmap);
+          this.cdr.detectChanges();
         }
       },
       error: (err: any) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         console.error('Failed to generate roadmap', err);
       }
     });
@@ -60,12 +62,14 @@ export class RoadmapDialogComponent implements OnChanges {
       next: (response: any) => {
         if (response.success && response.data) {
           this.roadmapUpdated.emit(this.roadmap!);
+          this.cdr.detectChanges();
         }
       },
       error: (err: any) => {
         console.error('Failed to update progress', err);
         // Revert on error
         node.completed = !node.completed;
+        this.cdr.detectChanges();
       }
     });
   }

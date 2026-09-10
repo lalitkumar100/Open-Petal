@@ -116,6 +116,7 @@ export class RegisterForm {
         } else {
           this.errorMessage = res.message || 'Registration failed.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
@@ -124,6 +125,7 @@ export class RegisterForm {
         } else {
           this.errorMessage = err.error?.message || 'An error occurred during registration.';
         }
+        this.cdr.detectChanges();
       }
     });
   }

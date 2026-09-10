@@ -42,6 +42,7 @@ export class ChatPanelComponent implements OnInit {
   
   // Canvas State Signals
   isCanvasOpen = signal<boolean>(false);
+  isFullscreen = signal<boolean>(false);
   canvasData = signal<{ markdown?: string; tables?: Dataset[] } | null>(null);
 
   private timerSub?: Subscription;
@@ -226,11 +227,17 @@ export class ChatPanelComponent implements OnInit {
       tables: msg.response.fromDatabase
     });
     this.isCanvasOpen.set(true);
+    this.isFullscreen.set(false);
   }
 
   closeCanvas(): void {
     this.isCanvasOpen.set(false);
+    this.isFullscreen.set(false);
     this.canvasData.set(null);
+  }
+
+  toggleFullscreen(): void {
+    this.isFullscreen.update(val => !val);
   }
 
   exportToExcel(table: Dataset): void {

@@ -7,6 +7,9 @@
     </div>
     <!-- Action Button Group -->
     <div class="flex flex-wrap items-center gap-3">
+      <button class="btn btn-ghost btn-circle" (click)="loadData()" title="Refresh data">
+        <mat-icon>refresh</mat-icon>
+      </button>
       <button class="btn btn-secondary btn-outline !rounded-none" (click)="openRequestModal()">
         <mat-icon class="mr-1 text-[18px]">add_circle_outline</mat-icon> Request a New Skill
       </button>
@@ -64,9 +67,21 @@
                 </td>
                 <td class="text-slate-600">{{ skill.peopleTaught }}</td>
                 <td class="text-center">
-                  <button class="btn btn-ghost btn-sm text-error" (click)="openDeleteModal('TEACH', skill.id)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  <div class="flex items-center justify-center gap-1">
+                    <ng-container *ngIf="skill.isVerified">
+                      <div class="tooltip" [attr.data-tip]="'Score: ' + skill.testMarks + '%'">
+                        <span class="badge badge-success badge-sm text-white font-semibold"><mat-icon class="text-[14px] w-[14px] h-[14px] mr-1">verified</mat-icon> Verified</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="!skill.isVerified">
+                      <button class="btn btn-ghost btn-sm text-primary" (click)="openVerifyModal(skill)" title="Verify Skill">
+                        <mat-icon>verified_user</mat-icon>
+                      </button>
+                    </ng-container>
+                    <button class="btn btn-ghost btn-sm text-error" (click)="openDeleteModal('TEACH', skill.skillId ?? skill.id)" title="Delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </td>
               </tr>
               <tr *ngIf="teachSkills.length === 0">
@@ -131,6 +146,115 @@
               </tr>
               <tr *ngIf="learningGoals.length === 0">
                 <td colspan="4" class="text-center py-6 text-slate-500">No learning goals added yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <!-- Received Connection Requests Section -->
+    <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none" *ngIf="receivedRequests.length > 0">
+      <div class="card-body p-0">
+        <div class="p-5 sm:px-6 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-semibold text-slate-900">Pending Received Requests</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Connection requests waiting for your response.</p>
+          </div>
+          <span class="badge badge-primary">{{ receivedRequests.length }}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr class="bg-base-200/50">
+                <th>Sender</th>
+                <th>Primary Skill</th>
+                <th>Offered Skill</th>
+                <th>Sent At</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let req of receivedRequests" class="hover">
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="avatar placeholder cursor-pointer" [routerLink]="['/user/user-details', req.receiverId]">
+                      <div class="bg-primary text-primary-content rounded-full w-8">
+                        <span class="text-xs">{{ req.receiverInitials }}</span>
+                      </div>
+                    </div>
+                    <div class="font-semibold text-slate-900 cursor-pointer hover:underline" [routerLink]="['/user/user-details', req.receiverId]">
+                      {{ req.receiverName }}
+                    </div>
+                  </div>
+                </td>
+                <td>{{ req.primarySkillName || '-' }}</td>
+                <td>{{ req.offeredSkillName || '-' }}</td>
+                <td class="text-slate-600 text-sm">{{ req.createdAt | date:'short' }}</td>
+                <td class="text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <button class="btn btn-primary btn-sm !rounded-none" (click)="acceptRequest(req.id)">
+                      <mat-icon class="mr-1 text-[18px]">check</mat-icon> Accept
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sent Connection Requests Section -->
+    <section class="card bg-base-100 border border-slate-200 shadow-sm !rounded-none">
+      <div class="card-body p-0">
+        <div class="p-5 sm:px-6 border-b border-slate-100">
+          <h2 class="text-base font-semibold text-slate-900">Sent Connection Requests</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Track the connection requests you've sent to other users.</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr class="bg-base-200/50">
+                <th>Receiver</th>
+                <th>Primary Skill</th>
+                <th>Offered Skill</th>
+                <th>Status</th>
+                <th>Sent At</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let req of sentRequests" class="hover">
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="avatar placeholder">
+                      <div class="bg-neutral text-neutral-content rounded-full w-8">
+                        <span class="text-xs">{{ req.receiverInitials }}</span>
+                      </div>
+                    </div>
+                    <div class="font-semibold text-slate-900">{{ req.receiverName }}</div>
+                  </div>
+                </td>
+                <td>{{ req.primarySkillName || '-' }}</td>
+                <td>{{ req.offeredSkillName || '-' }}</td>
+                <td>
+                  <span class="badge badge-outline badge-sm font-semibold tracking-wider" [ngClass]="{
+                          'badge-warning': req.status === 'PENDING',
+                          'badge-success': req.status === 'ACCEPTED',
+                          'badge-error': req.status === 'REJECTED'
+                        }">
+                    {{ req.status }}
+                  </span>
+                </td>
+                <td class="text-slate-600 text-sm">{{ req.createdAt | date:'short' }}</td>
+                <td class="text-center">
+                  <button class="btn btn-ghost btn-sm text-primary" [routerLink]="['/user/user-details', req.receiverId]">
+                    <mat-icon>person</mat-icon> View Profile
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="sentRequests.length === 0">
+                <td colspan="6" class="text-center py-6 text-slate-500">No sent connection requests.</td>
               </tr>
             </tbody>
           </table>
@@ -360,5 +484,60 @@
   </div>
   <form method="dialog" class="modal-backdrop">
     <button (click)="closeRequestModal()">close</button>
+  </form>
+</dialog>
+
+<!-- 6. Verify Skill Modal -->
+<dialog class="modal" [class.modal-open]="isVerifyModalOpen">
+  <div class="modal-box !rounded-none max-w-2xl">
+    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+      <span>Verify Skill: <span class="text-primary">{{ verifySelectedSkill?.skillName }}</span></span>
+      <span *ngIf="verifyStatus" class="badge" [ngClass]="verifyStatus === 'PASS' ? 'badge-success text-white' : 'badge-error text-white'">{{ verifyStatus }}</span>
+    </h3>
+    
+    <div *ngIf="isVerifyingLoading" class="py-12 flex flex-col items-center justify-center">
+      <span class="loading loading-spinner loading-lg text-primary mb-4"></span>
+      <p class="text-slate-500 font-medium">Generating questions... Please wait.</p>
+    </div>
+
+    <div *ngIf="verifyError" class="alert alert-error shadow-lg mb-4 text-sm text-white">
+      <mat-icon class="mr-2">error</mat-icon>
+      {{ verifyError }}
+    </div>
+
+    <div *ngIf="!isVerifyingLoading && verifyQuestions.length > 0 && !verifyStatus" class="space-y-6">
+      <div *ngFor="let q of verifyQuestions; let i = index" class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+        <p class="font-semibold text-slate-800 mb-3"><span class="text-primary mr-2">Q{{ i + 1 }}.</span>{{ q.question }}</p>
+        <div class="space-y-2">
+          <label *ngFor="let opt of q.options; let j = index" class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-white transition-colors border border-transparent hover:border-slate-200">
+            <input type="radio" [name]="'question_' + i" [value]="opt" [(ngModel)]="verifyAnswers[i]" class="radio radio-primary radio-sm" />
+            <span class="text-sm text-slate-700">{{ opt }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="verifyStatus" class="py-8 text-center flex flex-col items-center justify-center">
+      <div *ngIf="verifyStatus === 'PASS'" class="text-success mb-2">
+        <mat-icon class="text-6xl">check_circle</mat-icon>
+      </div>
+      <div *ngIf="verifyStatus === 'FAIL'" class="text-error mb-2">
+        <mat-icon class="text-6xl">cancel</mat-icon>
+      </div>
+      <h4 class="text-2xl font-bold text-slate-900 mb-1">{{ verifyStatus === 'PASS' ? 'Congratulations!' : 'Almost There!' }}</h4>
+      <p class="text-slate-600 mb-4">You scored <span class="font-bold text-lg" [ngClass]="verifyStatus === 'PASS' ? 'text-success' : 'text-error'">{{ verifyScore }}%</span></p>
+      <p class="text-sm text-slate-500" *ngIf="verifyStatus === 'PASS'">This skill has been successfully verified.</p>
+      <p class="text-sm text-slate-500" *ngIf="verifyStatus === 'FAIL'">You need 100% to pass. Better luck next time!</p>
+    </div>
+
+    <div class="modal-action border-t border-slate-100 pt-4 mt-6">
+      <button type="button" class="btn btn-ghost !rounded-none" (click)="closeVerifyModal()" [disabled]="isVerifyingSubmitting">Close</button>
+      <button *ngIf="verifyQuestions.length > 0 && !verifyStatus" type="button" class="btn btn-primary !rounded-none" [disabled]="!canSubmitVerification() || isVerifyingSubmitting" (click)="submitVerification()">
+        <span *ngIf="isVerifyingSubmitting" class="loading loading-spinner loading-xs mr-2"></span> Submit Answers
+      </button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="closeVerifyModal()">close</button>
   </form>
 </dialog>

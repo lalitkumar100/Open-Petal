@@ -7,6 +7,9 @@ export interface SkillBadge {
   id?: number;
   name: string;
   level?: string;
+  creditsPerSession?: number;
+  sessionDurationMin?: number;
+  isVerified?: boolean;
 }
 
 export interface UserSearchSummary {
@@ -32,6 +35,10 @@ export class SearchPage implements OnInit {
   searchType: string = 'user';
   query: string = '';
   usersList: UserSearchSummary[] = [];
+  currentPage = 0;
+  pageSize = 10;
+  totalPages = 0;
+  totalRecords = 0;
   isLoading = false;
   error: string | null = null;
   loggedInUserId: number | null = null;
@@ -48,7 +55,16 @@ export class SearchPage implements OnInit {
 
   onSearch() {
     this.recommendationMode = 'none';
+    this.currentPage = 0;
     this.fetchSearchResults();
+  }
+
+  changePage(delta: number) {
+    const newPage = this.currentPage + delta;
+    if (newPage >= 0 && newPage < this.totalPages) {
+      this.currentPage = newPage;
+      this.fetchSearchResults();
+    }
   }
 
   fetchSearchResults() {
@@ -56,14 +72,18 @@ export class SearchPage implements OnInit {
     this.error = null;
     this.cdr.detectChanges();
 
-    const url = `${environment.apiUrl}/${environment.apiVersion}/search/users?searchType=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`;
+    const url = `${environment.apiUrl}/${environment.apiVersion}/search/users?searchType=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}&page=${this.currentPage}&size=${this.pageSize}`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.usersList = res.data.content || [];
+          this.totalPages = res.data.totalPages || 0;
+          this.totalRecords = res.data.totalElements || 0;
         } else {
           this.usersList = [];
+          this.totalPages = 0;
+          this.totalRecords = 0;
           this.error = res.message || 'Failed to fetch search results.';
         }
         this.isLoading = false;
@@ -89,8 +109,10 @@ export class SearchPage implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.usersList = res.data;
+          this.totalPages = 0; // Disable pagination for recommendations
         } else {
           this.usersList = [];
+          this.totalPages = 0;
           this.error = res.message || 'Failed to fetch recommendations.';
         }
         this.isLoading = false;
@@ -116,8 +138,10 @@ export class SearchPage implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.usersList = res.data;
+          this.totalPages = 0; // Disable pagination for recommendations
         } else {
           this.usersList = [];
+          this.totalPages = 0;
           this.error = res.message || 'Failed to fetch recommendations.';
         }
         this.isLoading = false;
